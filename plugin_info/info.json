@@ -1,0 +1,32 @@
+{
+	"id" : "vmcAuto",
+	"name" : "VMC",
+	"description" : {
+		"fr_FR": "Plugin permettant la gestion de la vitesse d'une VMC en fonction de la pression athmosphérique, de la températures et du taux d'humidité"
+	},
+	"licence" : "AGPL",
+	"author" : "Scanab",
+	"require" : "3.3.39",
+	"category" : "automatisation",
+	"hasDependency" : false,
+	"hasOwnDeamon" : false,
+	"maxDependancyInstallTime" : 0,
+	"changelog" : "https://github.com/scanab/jeedom-plugin-networks/#language#/changelog",
+	"documentation" : "https://github.com/scanab/jeedom-plugin-networks/#language#/",
+	"link" : {
+		"forum":"Lien vers le forum"
+	},
+	"language": [
+		"fr_FR"
+	],
+	"compatibility": [
+		"miniplus",
+		"smart",
+		"rpi",
+		"docker",
+		"diy",
+		"mobile",
+		"v4",
+		"atlas"
+	]
+}
