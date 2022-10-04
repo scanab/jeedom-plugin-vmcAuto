@@ -19,99 +19,49 @@
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
 
 class vmcAuto extends eqLogic {
-  const nAvo   = 6.02214179*pow(10, 23);             // Avogadro constant, mol-1 (NIST, CODATA 2006)
-  const kBoltz = 1.3806504*pow(10, -23);             // Boltzmann constant, J K-1 (NIST, CODATA 2006)
-  const kuniv  = self::nAvo * self::kBoltz; // universal gas constant J mol-1 K-1
-  const MH2O   = 18.01534;                  // molar mass of water, g mol-1
-  const Mdry   = 28.9644;                   // molar mass of dry air, g mol-1
+  const AVOGADRO = 6.02214179*pow(10, 23);                // Avogadro constant, mol-1 (NIST, CODATA 2006)
+  const BOLTZMANN = 1.3806504*pow(10, -23);               // Boltzmann constant, J K-1 (NIST, CODATA 2006)
+  const UNIVERSAL_GAZ = self::AVOGADRO * self::BOLTZMANN; // universal gas constant J mol-1 K-1
+  const MH2O = 18.01534;                                  // molar mass of water, g mol-1
   
-  public static function warnings($n) {
-	switch ($n)
-	  case 1:
-	    log::add('vmcAuto', 'error', __('Le calcul de la pression de saturation en-dessous de -50° C n\'est pas possible', __FILE__));
-	    break;
-      case 2:
-	    log::add('vmcAuto', 'error', __('Cette humidité relative est impossible', __FILE__));
-	    break;
-      case 3:
-	    log::add('vmcAuto', 'error', __('Ce point de rosée est impossible', __FILE__));
-	    break;
-      case 4:
-	    log::add('vmcAuto', 'error', __('Une concentration negative n\'est pas possible', __FILE__));
-	    break;
-      case 5:
-	    log::add('vmcAuto', 'error', __('La concentration est plus haute que la saturation', __FILE__));
-	    break;
-      case 6:
-	    log::add('vmcAuto', 'error', __('Il n\'y a pas de température au-dessous de 0° Kelvin', __FILE__));
-	    break;
-      case 7:
-	    log::add('vmcAuto', 'error', __('Des pressions negatives sont impossibles', __FILE__));
-	    break;
-  }
-
   public static function computeAirDensity($temperature, $pression) {
     if ($temperature < -273.15) {
-      warnings(6);
-	  return;
+      throw new Exception(__('Il n\'y a pas de température au-dessous de 0° Kelvin', __FILE__));
 	}
     if ($pression <= 0) {
-      warnings(7);
-	  return;
+      throw new Exception(__('Des pressions negatives sont impossibles', __FILE__));
 	}
-    return $pression * 100.0 / self::kuniv / ($temperature + 273.15);
+    return $pression * 100.0 / self::UNIVERSAL_GAZ / ($temperature + 273.15);
   }
   
   // H2O saturation pressure from Lowe & Ficke, 1974
   public static function computeH2oSaturationPressure($temperature) {
     if ($temperature < -50) {
-      warnings(1);
-	  return;
+      throw new Exception(__('Le calcul de la pression de saturation en-dessous de -50° C n\'est pas possible', __FILE__));
 	}
     $pwat = 6.107799961 + $temperature*(0.4436518521 + $temperature*(0.01428945805 + $temperature*(2.650648471*pow(10, -4) + $temperature*(3.031240396*pow(10, -6) + $temperature*(2.034080948*pow(10, -8) + $temperature*6.136820929*pow(10, -11))))));
     $pice = 6.109177956 + $temperature*(0.5034698970 + $temperature*(0.01886013408 + $temperature*(4.176223716*pow(10, -4) + $temperature*(5.824720280*pow(10, -6) + $temperature*(4.838803174*pow(10, -8) + $temperature*1.838826904*pow(10, -11))))));
     return min($pwat, $pice);
   }
   
-  //public static function computeDewPoint($temperature, $ph2o) {
-  //  $dewPoint = $temperature;
-  //  while (computeH2oSaturationPressure($dewPoint) >= $ph2o) {
-  //    $dewPoint -= 0.01;
-  //  }
-  //  return $dewPoint;
-  }
-
-  function c_H2O_rh($temperature, $pression, $humidity) {
-    if (($humidity < 0)||($humidity > 100)) {warnings(2); return;}
-    if ($temperature < -50.0) {warnings(1); return;}
+  // calcul de la concentration d'eau en g / m3
+  function computeH2oConcentration($temperature, $pression, $humidity) {
+    if (($humidity < 0)||($humidity > 100)) {
+      throw new Exception(__('Cette humidité relative est impossible', __FILE__));
+	}
+    if ($temperature < -50.0) {
+      throw new Exception(__('Le calcul de la pression de saturation en-dessous de -50° C n\'est pas possible', __FILE__));
+	}
     $airDensity = computeAirDensity($temperature, $pression);
     $psat = computeH2oSaturationPressure($temperature);
     $ph2o = $psat * $humidity / 100;
-    if ($ph2o > $psat) {
-      warnings(5);
-      return;
-	}
-    if ($ph2o > $pression)) {
-		warnings(5); 
-		return;
+    if ($ph2o > $psat || $ph2o > $pression)) {
+      throw new Exception(__('La concentration est plus haute que la saturation', __FILE__));
 	}
     if ($ph2o < 0.039) {
-		warnings(1); 
-		return;
+      throw new Exception(__('Le calcul de la pression de saturation en-dessous de -50° C n\'est pas possible', __FILE__));
 	}
-    //$dewPoint = computeDewPoint($temperature + 0.01, $ph2o);
     $vmr = $ph2o / $pression;
-    //$spc = $vmr * self::MH2O / ($vmr * self::MH2O +(1.0 - $vmr) * self::Mdry);
-    // form.rh_H2O.value=ausgab($humidity);
-    // form.td_H2O.value=ausgab($dewPoint);
-    // form.dT_H2O.value=ausgab($temperature-$dewPoint);
-    // form.ppr_H2O.value=ausgab($ph2o);
-    // form.vmr_H2O.value=ausgab($vmr*1000.);
-    // console.log($vmr*self::MH2O*$airDensity);
-    // form.conc_H2O.value=ausgab($vmr*self::MH2O*$airDensity);
-    // form.mol_H2O.value=ausgab($vmr*$airDensity*nAvo*1.0e-6);
-    // form.spc_H2O.value=ausgab($spc*1000.);
-    // form.mmv_H2O.value=ausgab($spc/(1-$spc)*1000.);
 	return $vmr * self::MH2O * $airDensity;
   }
 
@@ -133,8 +83,17 @@ class vmcAuto extends eqLogic {
 
   /*
   * Fonction exécutée automatiquement toutes les minutes par Jeedom
-  public static function cron() {}
   */
+  public static function cron() {
+    try {
+      $cExt = self::computeH2oConcentration(15.4, 1017, 80);
+	  $cInt = self::computeH2oConcentration(21.2, 1017, 70);
+	  log::add('vmcAuto', 'debug', "concentration H2O extérieure : $cExt g/m3");
+	  log::add('vmcAuto', 'debug', "concentration H2O inérieure : $cInt g/m3");
+    } catch (Exception $exc) {
+      log::add('vmcAuto', 'error', $exc->getMessage());
+    }	  
+  }
 
   /*
   * Fonction exécutée automatiquement toutes les 5 minutes par Jeedom
