@@ -85,14 +85,19 @@ class vmcAuto extends eqLogic {
   * Fonction exécutée automatiquement toutes les minutes par Jeedom
   */
   public static function cron() {
-    try {
-      $cExt = self::computeH2oConcentration(15.4, 1017, 80);
-	  $cInt = self::computeH2oConcentration(21.2, 1017, 70);
-	  log::add('vmcAuto', 'debug', "concentration H2O extérieure : $cExt g/m3");
-	  log::add('vmcAuto', 'debug', "concentration H2O inérieure : $cInt g/m3");
-    } catch (Exception $exc) {
-      log::add('vmcAuto', 'error', $exc->getMessage());
-    }	  
+		foreach (eqLogic::byType('vmcAuto', true) as $eqLogic) {
+			$autorefresh = $eqLogic->getConfiguration('autorefresh');
+			if ($eqLogic->getIsEnable() == 1 && $autorefresh != '') {
+				try {
+					$c = new Cron\CronExpression(checkAndFixCron($autorefresh), new Cron\FieldFactory);
+					if ($c->isDue()) {
+						$eqLogic->calculate();
+					}
+				} catch (Exception $exc) {
+					log::add('vmcAuto', 'error', __('Expression cron non valide pour', __FILE__) . ' ' . $eqLogic->getHumanName() . ' : ' . $autorefresh);
+				}
+			}
+		}
   }
 
   /*
@@ -145,6 +150,9 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement avant la sauvegarde (création ou mise à jour) de l'équipement
   public function preSave() {
+		if ($this->getConfiguration('autorefresh') == '') {
+			$this->setConfiguration('autorefresh', '* * * * *');
+		}
   }
 
   // Fonction exécutée automatiquement après la sauvegarde (création ou mise à jour) de l'équipement
@@ -191,6 +199,17 @@ class vmcAuto extends eqLogic {
     // no return value
   }
   */
+
+  public function calculate() {
+    try {
+      $cExt = self::computeH2oConcentration(15.4, 1017, 80);
+	  $cInt = self::computeH2oConcentration(21.2, 1017, 70);
+	  log::add('vmcAuto', 'debug', "concentration H2O extérieur : $cExt g/m3");
+	  log::add('vmcAuto', 'debug', "concentration H2O intérieur : $cInt g/m3");
+    } catch (Exception $exc) {
+      log::add('vmcAuto', 'error', $exc->getMessage());
+    }	  
+  }
 
   /*     * **********************Getteur Setteur*************************** */
 

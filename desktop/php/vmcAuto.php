@@ -128,6 +128,91 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
 							<legend><i class="fas fa-cogs"></i> {{Paramètres spécifiques}}</legend>
 							<div class="form-group">
+								<div class="customCmdTemperatureExt">
+								  <label class="col-sm-2 control-label help" data-help="{{Sélectionnez une commande info retournant la la température extérieure}}">{{Température extérieure}}</label>
+								  <div class="col-sm-4">
+									<div class="input-group">
+									  <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="cmdTemperatureExt" />
+									  <span class="input-group-btn">
+										<a class="btn btn-default cursor listCmdInfo" title="Rechercher une commande"><i class="fas fa-list-alt"></i></a>
+									  </span>
+									</div>
+								  </div>
+								</div>
+								<div class="customCmdHumidityExt">
+								  <label class="col-sm-2 control-label help" data-help="{{Sélectionnez une commande info retournant la l'humidité extérieure}}">{{Humidité extérieure}}</label>
+								  <div class="col-sm-4">
+									<div class="input-group">
+									  <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="cmdHumidityExt" />
+									  <span class="input-group-btn">
+										<a class="btn btn-default cursor listCmdInfo" title="Rechercher une commande"><i class="fas fa-list-alt"></i></a>
+									  </span>
+									</div>
+								  </div>
+								</div>
+								<div class="customCmdTemperatureInt">
+								  <label class="col-sm-2 control-label help" data-help="{{Sélectionnez une commande info retournant la la température intérieure}}">{{Température intérieure}}</label>
+								  <div class="col-sm-4">
+									<div class="input-group">
+									  <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="cmdTemperatureInt" />
+									  <span class="input-group-btn">
+										<a class="btn btn-default cursor listCmdInfo" title="Rechercher une commande"><i class="fas fa-list-alt"></i></a>
+									  </span>
+									</div>
+								  </div>
+								</div>
+								<div class="customCmdHumidityInt">
+								  <label class="col-sm-2 control-label help" data-help="{{Sélectionnez une commande info retournant la l'humidité intérieure}}">{{Humidité intérieure}}</label>
+								  <div class="col-sm-4">
+									<div class="input-group">
+									  <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="cmdHumidityInt" />
+									  <span class="input-group-btn">
+										<a class="btn btn-default cursor listCmdInfo" title="Rechercher une commande"><i class="fas fa-list-alt"></i></a>
+									  </span>
+									</div>
+								  </div>
+								</div>
+								<div class="customCmdVmcOn">
+								  <label class="col-sm-2 control-label help" data-help="{{Sélectionnez une commande action allumant la ventilation}}">{{Ventilation ON}}</label>
+								  <div class="col-sm-4">
+									<div class="input-group">
+									  <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="cmdVmcOn" />
+									  <span class="input-group-btn">
+										<a class="btn btn-default cursor listCmdAction" title="Rechercher une commande"><i class="fas fa-list-alt"></i></a>
+									  </span>
+									</div>
+								  </div>
+								</div>
+								<div>
+									<label class="col-sm-3 control-label"><i class="icon maison-house109"></i> {{Type ventilation}}</label>
+									<div class="col-sm-3">
+									  <select class="form-control eqLogicAttr configuration typeVentilation" data-l1key="configuration" data-l2key="ventilationStop">
+										<option value="timer">{{Timer}}</option>
+										<option value="cmd">{{Commande}}</option>
+									  </select>
+									</div>
+								</div>
+								<div class="customCmdVmcOff">
+								  <label class="col-sm-2 control-label help" data-help="{{Sélectionnez une commande action éteignant la ventilation. Laisser vide si la ventilation a un timer}}">{{Ventilation OFF}}</label>
+								  <div class="col-sm-4">
+									<div class="input-group">
+									  <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="cmdVmcOff" />
+									  <span class="input-group-btn">
+										<a class="btn btn-default cursor listCmdAction" title="Rechercher une commande"><i class="fas fa-list-alt"></i></a>
+									  </span>
+									</div>
+								  </div>
+								</div>
+								<div class="customOnTimer">
+									<label class="col-sm-2 control-label">{{Durée du timer}}
+										<sup><i class="fas fa-question-circle tooltips" title="{{Laisser vide si pas de timer}}"></i></sup>
+									</label>
+									<div class="col-sm-4">
+										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="onTimer" placeholder="{{Paramètre n°1}}">
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
 								<label class="col-sm-4 control-label">{{Nom du paramètre n°1}}
 									<sup><i class="fas fa-question-circle tooltips" title="{{Renseignez le paramètre n°1 de l'équipement}}"></i></sup>
 								</label>

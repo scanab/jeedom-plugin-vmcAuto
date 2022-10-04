@@ -13,6 +13,15 @@
 * You should have received a copy of the GNU General Public License
 * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 */
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=ventilationStop]').on('change', function () {
+  $('.customCmdVmcOff').hide();
+  $('.customOnTimer').hide();
+  if ($(this).value() === 'timer') {
+    $('.customOnTimer').show();
+  } else if ($(this).value() === 'cmd') {
+    $('.customCmdVmcOff').show();
+  }
+});
 
 /* Permet la réorganisation des commandes dans l'équipement */
 $("#table_cmd").sortable({
