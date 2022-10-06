@@ -142,18 +142,18 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement avant la mise à jour de l'équipement
   public function preUpdate() {
-	  validateMandatoryCmd('cmdPressionAtmo', 'info', 'pression atmosphérique');
-	  validateMandatoryCmd('cmdTemperatureExt', 'info', 'température extérieure');
-	  validateMandatoryCmd('cmdTemperatureInt', 'info', 'température interieure');
-	  validateMandatoryCmd('cmdHumidityExt', 'info', 'humidité extérieure');
-	  validateMandatoryCmd('cmdHumidityInt', 'info', 'humidité interieure');
-	  validateMandatoryCmd('cmdVmcOn', 'action', 'ON de la ventilation');
-	  validateOptionalCmd('cmdVmcState', 'info', 'état de la ventilation');
+	  validateMandatoryCmdInConfig('cmdPressionAtmo', 'info', 'pression atmosphérique');
+	  validateMandatoryCmdInConfig('cmdTemperatureExt', 'info', 'température extérieure');
+	  validateMandatoryCmdInConfig('cmdTemperatureInt', 'info', 'température interieure');
+	  validateMandatoryCmdInConfig('cmdHumidityExt', 'info', 'humidité extérieure');
+	  validateMandatoryCmdInConfig('cmdHumidityInt', 'info', 'humidité interieure');
+	  validateMandatoryCmdInConfig('cmdVmcOn', 'action', 'ON de la ventilation');
+	  validateOptionalCmdInConfig('cmdVmcState', 'info', 'état de la ventilation');
 	  if ($this->getConfiguration('typeVmcStop') == 'cmd') 
-		  validateMandatoryCmd('cmdVmcOff', 'action', 'OFF de la ventilation');
+		  validateMandatoryCmdInConfig('cmdVmcOff', 'action', 'OFF de la ventilation');
   }
 
-  public function validateOptionalCmdInConfig($confEntry, $type, $label) {
+  private function validateOptionalCmdInConfig($confEntry, $type, $label) {
 	  $conf = $this->getConfiguration($confEntry);
 		if ($conf != '') {
 			$cmdId = trim(str_replace('#', '', $conf));
@@ -163,7 +163,7 @@ class vmcAuto extends eqLogic {
 		}
   }
   
-  public function validateMandatoryCmdInConfig($confEntry, $type, $label) {
+  private function validateMandatoryCmdInConfig($confEntry, $type, $label) {
 	  $conf = $this->getConfiguration($confEntry);
 		if ($conf != '') {
 			$cmdId = trim(str_replace('#', '', $conf));
@@ -194,14 +194,14 @@ class vmcAuto extends eqLogic {
 	  createCmdIfNecessary('concentrationH2Oext', 'Concentration H2O extérieur', 1, 'info', 'numeric', 'g/m3', 1);
   }
   
-  public function deleteCmdIfNecessary($logicalId) {
+  private function deleteCmdIfNecessary($logicalId) {
 	  $cmd = $this->getCmd(null, $logicalId);
 		if (!is_object($cmd)) {
 			$cmd->remove();
 		}
   }
   
-  public function createCmdIfNecessary($logicalId, $name, $visible=1, $type='action', $subType='default', $unite='', $historized=0, $value='') {
+  private function createCmdIfNecessary($logicalId, $name, $visible=1, $type='action', $subType='default', $unite='', $historized=0, $value='') {
 	  $cmd = $this->getCmd(null, $logicalId);
 		if (!is_object($cmd)) {
 			$cmd = new vmcAutoCmd();
