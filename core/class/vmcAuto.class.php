@@ -44,8 +44,8 @@ class vmcAuto extends eqLogic {
     return min($pwat, $pice);
   }
   
-  // calcul de la concentration d'eau en g / m3
-  function computeH2oConcentration($temperature, $pression, $humidity) {
+  // calcul de la concentration d'eau en g/m3 en fonction de la température, de la pression et du taux d'humidité
+  function static computeH2oConcentration($temperature, $pression, $humidity) {
     if (($humidity < 0)||($humidity > 100)) {
       throw new Exception(__('Cette humidité relative est impossible', __FILE__));
 	}
@@ -63,6 +63,27 @@ class vmcAuto extends eqLogic {
 	}
     $vmr = $ph2o / $pression;
 	return $vmr * self::MH2O * $airDensity;
+  }
+
+  // calcul du taux d'humidité fonction de la température, de la pression et de la concentration en h2o
+  function static computeH2oConcentration($temperature, $pression, $h2oConcentration) {
+    if ($h2oConcentration < 0) {
+      throw new Exception(__('Une concentration négative n\'est pas possible', __FILE__));
+	}
+    if ($temperature < -50.0) {
+      throw new Exception(__('Le calcul de la pression de saturation en-dessous de -50° C n\'est pas possible', __FILE__));
+	}
+    $airDensity = computeAirDensity($temperature, $pression);
+    $psat = computeH2oSaturationPressure($temperature);
+	$vmr = $h2oConcentration / self::MH2O / $airDensity;
+	$ph2o = $vmr * $pression;
+    if ($ph2o > $psat || $ph2o > $pression)) {
+      throw new Exception(__('La concentration est plus haute que la saturation', __FILE__));
+	}
+    if ($ph2o < 0.039) {
+      throw new Exception(__('Le calcul de la pression de saturation en-dessous de -50° C n\'est pas possible', __FILE__));
+	}
+	return $ph2o / $psat * 100;
   }
 
   /*     * *************************Attributs****************************** */
@@ -178,20 +199,24 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement après la mise à jour de l'équipement
   public function postUpdate() {
-	  createCmdIfNecessary('vmcON', 'ON');
+	  createCmdActionIfNecessary('vmcON', 'ON');
 	  if ($this->getConfiguration('typeVmcStop') == 'cmd') {
-		  createCmdIfNecessary('vmcOFF', 'OFF');
+		  createCmdActionIfNecessary('vmcOFF', 'OFF');
 	  } else {
 		  deleteCmdIfNecessary('vmcOFF');
 	  }
-	  createCmdIfNecessary('refresh', 'Rafraichir');
+	  createCmdActionIfNecessary('refresh', 'Rafraichir');
 	  if ($this->getConfiguration('cmdVmcState') != '') {
-		  createCmdIfNecessary('vmcState', 'Etat', 1, 'info', 'boolean', '', 1, $this->getConfiguration('cmdVmcState')); // vérifier ce qu'il faut dans value : l'id ?
+		  createCmdInfoIfNecessary('vmcState', 'Etat', 1, 'info', 'boolean', '', 1, $this->getConfiguration('cmdVmcState')); // vérifier ce qu'il faut dans value : l'id ?
 	  } else {
 		  deleteCmdIfNecessary('vmcState');
 	  }
-	  createCmdIfNecessary('concentrationH2Oint', 'Concentration H2O intérieur', 1, 'info', 'numeric', 'g/m3', 1);
-	  createCmdIfNecessary('concentrationH2Oext', 'Concentration H2O extérieur', 1, 'info', 'numeric', 'g/m3', 1);
+	  createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 1, 'numeric', 'g/m3', 1);
+	  createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 1, 'numeric', 'g/m3', 1);
+	  createCmdInfoIfNecessary('theoreticalH2OconcentrationInt', 'Concentration H2O théorique intérieur', 1, 'numeric', 'g/m3', 1);
+	  createCmdInfoIfNecessary('autoState', 'Etat automatisme', 0, 'boolean', '', 0)
+	  createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'default', 1, 'autoState');
+	  createCmdActionIfNecessary('autoOff', 'Désactiver automatisme', 1, 'default', 0, 'autoState');
   }
   
   private function deleteCmdIfNecessary($logicalId) {
@@ -201,7 +226,15 @@ class vmcAuto extends eqLogic {
 		}
   }
   
-  private function createCmdIfNecessary($logicalId, $name, $visible=1, $type='action', $subType='default', $unite='', $historized=0, $value='') {
+  private function createCmdInfoIfNecessary($logicalId, $name, $visible=1, $subType='default', $unite='', $historized=0, $value='') {
+	  createCmdIfNecessary($logicalId, $name, $visible, 'info', $subType, $unite, $historized, $value);
+  }
+  
+  private function createCmdActionIfNecessary($logicalId, $name, $visible=1, $subType='default', $value='', $infoName='') {
+	  createCmdIfNecessary($logicalId, $name, $visible, $type='action', $subType, '', 0, $value, $infoName);
+  }
+  
+  private function createCmdIfNecessary($logicalId, $name, $visible=1, $type='action', $subType='default', $unite='', $historized=0, $value='', $infoName='') {
 	  $cmd = $this->getCmd(null, $logicalId);
 		if (!is_object($cmd)) {
 			$cmd = new vmcAutoCmd();
@@ -216,6 +249,12 @@ class vmcAuto extends eqLogic {
 		if ($subType != 'default') $cmd->setSubType($subType);
 		if ($unite != '') $cmd->setUnite($unite)
 		if ($value != '') $cmd->setValue($value);
+		if ($infoName != '') {
+			$actionInfo = $this->getCmd(null, $infoName);
+			if (!is_object($actionInfo)) {
+				$cmd->setConfiguration('infoId', $actionInfo->getId());
+			}
+		}
 		$cmd->setEqLogic_id($this->getId());
 		$cmd->save();
   }
@@ -274,10 +313,20 @@ class vmcAuto extends eqLogic {
 
   public function calculate() {
     try {
-      $cExt = self::computeH2oConcentration(15.4, 1017, 80);
-	  $cInt = self::computeH2oConcentration(21.2, 1017, 70);
+      $cExt = self::computeH2oConcentration(getExteriorTemperature(), getAtmosphericPressure(), getExteriorHumidity());
+	  $cmdConcentrationExt = $this->getCmd(null, 'H2OconcentrationExt');
+	  $cmdConcentrationExt->event($cExt);
 	  log::add('vmcAuto', 'debug', "concentration H2O extérieur : $cExt g/m3");
+
+	  $cInt = self::computeH2oConcentration(getInteriorTemperature(), getAtmosphericPressure(), getInteriorHumidity());
+	  $cmdConcentrationInt = $this->getCmd(null, 'H2OconcentrationInt');
+	  $cmdConcentrationInt->event($cInt);
 	  log::add('vmcAuto', 'debug', "concentration H2O intérieur : $cInt g/m3");
+	  
+	  $theoreticalH2OconcentrationInt = self::computeH2oConcentration($temperature, $pression, $cExt);
+	  $cmdTheoreticalH2OconcentrationInt = $this->getCmd(null, 'theoreticalH2OconcentrationInt');
+	  $cmdTheoreticalH2OconcentrationInt->event($theoreticalH2OconcentrationInt);
+	  log::add('vmcAuto', 'debug', "concentration H2O intérieur théorique accessible : $cmdTheoreticalH2OconcentrationInt %");
     } catch (Exception $exc) {
       log::add('vmcAuto', 'error', $exc->getMessage());
     }	  
@@ -315,7 +364,7 @@ class vmcAuto extends eqLogic {
 		return $cmd->execCmd();
 	}
 
-	private function startVentilation() {
+	public function startVentilation() {
 		$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdVmcOn')));
 		if ($cmdId == '') return false;
 		$cmd = cmd::byId($cmdId);
@@ -323,7 +372,7 @@ class vmcAuto extends eqLogic {
 		return $cmd->execCmd();
 	}
 
-	private function stopVentilation() {
+	public function stopVentilation() {
 		$typeStop = $this->getConfiguration('typeVmcStop');
 		if ($typeStop != 'cmd') return false;
 		$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdVmcOff')));
@@ -358,6 +407,26 @@ class vmcAutoCmd extends cmd {
 
   // Exécution d'une commande
   public function execute($_options = array()) {
+      log::add('vmcAuto', 'debug', "Execute " . $this->getLogicalId() . ' on ' . $this->getEqLogic()->getHumanName());
+	  switch ($this->getLogicalId()) {
+		  case 'vmcON' :
+			$eqlogic = $this->getEqLogic();
+			$eqlogic->startVentilation()
+			break;
+		  case 'vmcOFF' :
+			$eqlogic = $this->getEqLogic();
+			$eqlogic->stopVentilation()
+			break;
+		  case 'refresh' :
+			$eqlogic = $this->getEqLogic();
+			$eqlogic->calculate();
+			break;
+		  case 'vmcState' :
+		  case 'H2OconcentrationInt' :
+		  case 'H2OconcentrationExt' :
+		  case 'theoreticalH2OconcentrationInt' :
+			break;
+	  }
   }
 
   /*     * **********************Getteur Setteur*************************** */
