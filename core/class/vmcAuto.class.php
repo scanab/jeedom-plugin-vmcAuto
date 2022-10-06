@@ -327,11 +327,21 @@ class vmcAuto extends eqLogic {
 	  $cmdTheoreticalH2OconcentrationInt = $this->getCmd(null, 'theoreticalH2OconcentrationInt');
 	  $cmdTheoreticalH2OconcentrationInt->event($theoreticalH2OconcentrationInt);
 	  log::add('vmcAuto', 'debug', "concentration H2O intérieur théorique accessible : $cmdTheoreticalH2OconcentrationInt %");
+	  
+	  if (isAutomatismeOn()) {
+		  
+	  }
+	  
     } catch (Exception $exc) {
       log::add('vmcAuto', 'error', $exc->getMessage());
     }	  
   }
 
+	private function isAutomatismeOn() {
+		$cmdId = trim(str_replace('#', '', $this->getConfiguration('autoState')));
+		return getValueFromCmd($cmdId);
+	}
+	
 	private function getAtmosphericPressure() {
 		$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdPressionAtmo')));
 		return getValueFromCmd($cmdId);
@@ -425,6 +435,9 @@ class vmcAutoCmd extends cmd {
 		  case 'H2OconcentrationInt' :
 		  case 'H2OconcentrationExt' :
 		  case 'theoreticalH2OconcentrationInt' :
+		  case 'autoState' :
+		  case 'autoOn' :
+		  case 'autoOff' :
 			break;
 	  }
   }
