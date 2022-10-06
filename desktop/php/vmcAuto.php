@@ -129,7 +129,18 @@ $eqLogics = eqLogic::byType($plugin->getId());
 							<legend><i class="fas fa-cogs"></i> {{Paramètres spécifiques}}</legend>
 							<div class="form-group">
 								<div class="customCmdTemperatureExt">
-								  <label class="col-sm-2 control-label help" data-help="{{Sélectionnez une commande info retournant la la température extérieure}}">{{Température extérieure}}</label>
+								  <label class="col-sm-2 control-label help" data-help="{{Sélectionnez une commande info retournant la pression atmosphérique}}">{{Pression atmosphérique}}</label>
+								  <div class="col-sm-4">
+									<div class="input-group">
+									  <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="cmdPressionAtmo" />
+									  <span class="input-group-btn">
+										<a class="btn btn-default cursor listCmdInfo" title="Rechercher une commande"><i class="fas fa-list-alt"></i></a>
+									  </span>
+									</div>
+								  </div>
+								</div>
+								<div class="customCmdTemperatureExt">
+								  <label class="col-sm-2 control-label help" data-help="{{Sélectionnez une commande info retournant la température extérieure}}">{{Température extérieure}}</label>
 								  <div class="col-sm-4">
 									<div class="input-group">
 									  <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="cmdTemperatureExt" />
@@ -172,6 +183,17 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									</div>
 								  </div>
 								</div>
+								<div class="customCmdVmcState">
+								  <label class="col-sm-2 control-label help" data-help="{{Sélectionnez une commande info donnant l'état de la ventilation (optionnel)}}">{{Etat ventilation}}</label>
+								  <div class="col-sm-4">
+									<div class="input-group">
+									  <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="cmdVmcState" />
+									  <span class="input-group-btn">
+										<a class="btn btn-default cursor listCmdInfo" title="Rechercher une commande"><i class="fas fa-list-alt"></i></a>
+									  </span>
+									</div>
+								  </div>
+								</div>
 								<div class="customCmdVmcOn">
 								  <label class="col-sm-2 control-label help" data-help="{{Sélectionnez une commande action allumant la ventilation}}">{{Ventilation ON}}</label>
 								  <div class="col-sm-4">
@@ -186,7 +208,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								<div>
 									<label class="col-sm-3 control-label"><i class="icon maison-house109"></i> {{Type ventilation}}</label>
 									<div class="col-sm-3">
-									  <select class="form-control eqLogicAttr configuration typeVentilation" data-l1key="configuration" data-l2key="ventilationStop">
+									  <select class="form-control eqLogicAttr configuration typeVentilation" data-l1key="configuration" data-l2key="typeVmcStop">
 										<option value="timer">{{Timer}}</option>
 										<option value="cmd">{{Commande}}</option>
 									  </select>
@@ -204,7 +226,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								  </div>
 								</div>
 								<div class="customOnTimer">
-									<label class="col-sm-2 control-label">{{Durée du timer}}
+									<label class="col-sm-2 control-label">{{Durée du timer en secondes}}
 										<sup><i class="fas fa-question-circle tooltips" title="{{Laisser vide si pas de timer}}"></i></sup>
 									</label>
 									<div class="col-sm-4">

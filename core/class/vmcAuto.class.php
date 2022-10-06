@@ -142,10 +142,82 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement avant la mise à jour de l'équipement
   public function preUpdate() {
+	  validateMandatoryCmd('cmdPressionAtmo', 'info', 'pression atmosphérique');
+	  validateMandatoryCmd('cmdTemperatureExt', 'info', 'température extérieure');
+	  validateMandatoryCmd('cmdTemperatureInt', 'info', 'température interieure');
+	  validateMandatoryCmd('cmdHumidityExt', 'info', 'humidité extérieure');
+	  validateMandatoryCmd('cmdHumidityInt', 'info', 'humidité interieure');
+	  validateMandatoryCmd('cmdVmcOn', 'action', 'ON de la ventilation');
+	  validateOptionalCmd('cmdVmcState', 'info', 'état de la ventilation');
+	  if ($this->getConfiguration('typeVmcStop') == 'cmd') 
+		  validateMandatoryCmd('cmdVmcOff', 'action', 'OFF de la ventilation');
   }
+
+  public function validateOptionalCmdInConfig($confEntry, $type, $label) {
+	  $conf = $this->getConfiguration($confEntry);
+		if ($conf != '') {
+			$cmdId = trim(str_replace('#', '', $conf));
+			$cmd = cmd::byId($cmdId);
+			if (!is_object($cmd) throw new Exception(__("La commmande $label doit être une commande valide", __FILE__));
+			if ($cmd->getType != $type) throw new Exception(__("La commmande $label doit être de type $type", __FILE__));
+		}
+  }
+  
+  public function validateMandatoryCmdInConfig($confEntry, $type, $label) {
+	  $conf = $this->getConfiguration($confEntry);
+		if ($conf != '') {
+			$cmdId = trim(str_replace('#', '', $conf));
+			$cmd = cmd::byId($cmdId);
+			if (!is_object($cmd) throw new Exception(__("La commmande $label doit être une commande valide", __FILE__));
+			if ($cmd->getType != $type) throw new Exception(__("La commmande $label doit être de type $type", __FILE__));
+		} else {
+			if (!is_object($cmd) throw new Exception(__("La commmande $label doit être renseignée", __FILE__));
+		}
+  }
+
 
   // Fonction exécutée automatiquement après la mise à jour de l'équipement
   public function postUpdate() {
+	  createCmdIfNecessary('vmcON', 'ON');
+	  if ($this->getConfiguration('typeVmcStop') == 'cmd') {
+		  createCmdIfNecessary('vmcOFF', 'OFF');
+	  } else {
+		  deleteCmdIfNecessary('vmcOFF');
+	  }
+	  createCmdIfNecessary('refresh', 'Rafraichir');
+	  if ($this->getConfiguration('cmdVmcState') != '') {
+		  createCmdIfNecessary('vmcState', 'Etat', 1, 'info', 'boolean', '', 1, $this->getConfiguration('cmdVmcState')); // vérifier ce qu'il faut dans value : l'id ?
+	  } else {
+		  deleteCmdIfNecessary('vmcState');
+	  }
+	  createCmdIfNecessary('concentrationH2Oint', 'Concentration H2O intérieur', 1, 'info', 'numeric', 'g/m3', 1);
+	  createCmdIfNecessary('concentrationH2Oext', 'Concentration H2O extérieur', 1, 'info', 'numeric', 'g/m3', 1);
+  }
+  
+  public function deleteCmdIfNecessary($logicalId) {
+	  $cmd = $this->getCmd(null, $logicalId);
+		if (!is_object($cmd)) {
+			$cmd->remove();
+		}
+  }
+  
+  public function createCmdIfNecessary($logicalId, $name, $visible=1, $type='action', $subType='default', $unite='', $historized=0, $value='') {
+	  $cmd = $this->getCmd(null, $logicalId);
+		if (!is_object($cmd)) {
+			$cmd = new vmcAutoCmd();
+			$cmd->setLogicalId($logicalId);
+			$cmd->setName(__($name, __FILE__));
+			$cmd->setIsVisible($visible);
+			if ($type == 'info') {
+				$cmd->setIsHistorized($historized);
+			}
+		}
+		$cmd->setType($type);
+		if ($subType != 'default') $cmd->setSubType($subType);
+		if ($unite != '') $cmd->setUnite($unite)
+		if ($value != '') $cmd->setValue($value);
+		$cmd->setEqLogic_id($this->getId());
+		$cmd->save();
   }
 
   // Fonction exécutée automatiquement avant la sauvegarde (création ou mise à jour) de l'équipement
@@ -210,6 +282,56 @@ class vmcAuto extends eqLogic {
       log::add('vmcAuto', 'error', $exc->getMessage());
     }	  
   }
+
+	private function getAtmosphericPressure() {
+		$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdPressionAtmo')));
+		return getValueFromCmd($cmdId);
+	}
+
+	private function getInteriorTemperature() {
+		$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdTemperatureInt')));
+		return getValueFromCmd($cmdId);
+	}
+
+	private function getInteriorHumidity() {
+		$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdHumidityInt')));
+		return getValueFromCmd($cmdId);
+	}
+
+	private function getExteriorTemperature() {
+		$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdTemperatureExt')));
+		return getValueFromCmd($cmdId);
+	}
+
+	private function getExteriorHumidity() {
+		$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdHumidityExt')));
+		return getValueFromCmd($cmdId);
+	}
+
+	private function getValueFromCmd($cmdId) {
+		if ($cmdId == '') return false;
+		$cmd = cmd::byId($cmdId);
+		if (!is_object($cmd)) return false;
+		return $cmd->execCmd();
+	}
+
+	private function startVentilation() {
+		$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdVmcOn')));
+		if ($cmdId == '') return false;
+		$cmd = cmd::byId($cmdId);
+		if (!is_object($cmd)) return false;
+		return $cmd->execCmd();
+	}
+
+	private function stopVentilation() {
+		$typeStop = $this->getConfiguration('typeVmcStop');
+		if ($typeStop != 'cmd') return false;
+		$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdVmcOff')));
+		if ($cmdId == '') return false;
+		$cmd = cmd::byId($cmdId);
+		if (!is_object($cmd)) return false;
+		return $cmd->execCmd();
+	}
 
   /*     * **********************Getteur Setteur*************************** */
 
