@@ -339,12 +339,14 @@ class vmcAuto extends eqLogic {
       $maxHumidity = 70;
       $minHumidity = 40;
       $hysteresis = 5;
+      $humidityInt = $this->getInteriorHumidity();
       if ($this->isAutomatismeOn()) {
+        log::add('vmcAuto', 'debug', "Automatisme is ON");
         $cmdRegulationState = $this->getCmd(null, 'regulationState');
-        if ($cInt > $maxHumidity && $cmdTheoreticalH2OhumidityInt <= ($maxHumidity - $hysteresis)) {
+        if ($humidityInt > $maxHumidity && $cmdTheoreticalH2OhumidityInt <= ($maxHumidity - $hysteresis)) {
           $this->startVentilation();
           $cmdRegulationState->event(1);
-        } else if ($cInt < 40 && $cmdTheoreticalH2OhumidityInt >= ($maxHumidity + $hysteresis)) {
+        } else if ($humidityInt < 40 && $cmdTheoreticalH2OhumidityInt >= ($maxHumidity + $hysteresis)) {
           $this->startVentilation();
           $cmdRegulationState->event(1);
         } else {
@@ -352,6 +354,7 @@ class vmcAuto extends eqLogic {
           $cmdRegulationState->event(0);
         }
       } else {
+        log::add('vmcAuto', 'debug', "Automatisme is OFF");
         $cmdRegulationState = $this->getCmd(null, 'regulationState');
         $cmdRegulationState->event(0);
       }
@@ -403,6 +406,7 @@ class vmcAuto extends eqLogic {
   }
 
   public function startVentilation() {
+    log::add('vmcAuto', 'debug', "Start ventilation");
     $cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdVmcOn')));
     if ($cmdId == '') return false;
     $cmd = cmd::byId($cmdId);
@@ -411,6 +415,7 @@ class vmcAuto extends eqLogic {
   }
 
   public function stopVentilation() {
+    log::add('vmcAuto', 'debug', "Stop ventilation");
     $typeStop = $this->getConfiguration('typeVmcStop');
     if ($typeStop != 'cmd') return false;
     $cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdVmcOff')));
