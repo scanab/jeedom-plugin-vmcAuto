@@ -238,7 +238,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									</div>
 								</div>
 							</div>
-							<div class="form-group">
+							<!--div class="form-group">
 								<label class="col-sm-4 control-label">{{Nom du paramètre n°1}}
 									<sup><i class="fas fa-question-circle tooltips" title="{{Renseignez le paramètre n°1 de l'équipement}}"></i></sup>
 								</label>
@@ -253,7 +253,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								<div class="col-sm-6">
 									<input type="text" class="eqLogicAttr form-control inputPassword" data-l1key="configuration" data-l2key="password">
 								</div>
-							</div>
+							</div-->
 							<!-- Exemple de champ de saisie du cron d'auto-actualisation avec assistant -->
 							<!-- La fonction cron de la classe du plugin doit contenir le code prévu pour que ce champ soit fonctionnel -->
 							<div class="form-group">
