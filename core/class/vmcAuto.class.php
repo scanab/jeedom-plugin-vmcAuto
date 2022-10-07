@@ -19,10 +19,10 @@
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
 
 class vmcAuto extends eqLogic {
-  $AVOGADRO = 6.02214179*pow(10, 23);                // Avogadro constant, mol-1 (NIST, CODATA 2006)
-  $BOLTZMANN = 1.3806504*pow(10, -23);               // Boltzmann constant, J K-1 (NIST, CODATA 2006)
-  $UNIVERSAL_GAZ = $AVOGADRO * $BOLTZMANN; // universal gas constant J mol-1 K-1
-  $MH2O = 18.01534;                                  // molar mass of water, g mol-1
+  var $AVOGADRO = 6.02214179*pow(10, 23);                // Avogadro constant, mol-1 (NIST, CODATA 2006)
+  var $BOLTZMANN = 1.3806504*pow(10, -23);               // Boltzmann constant, J K-1 (NIST, CODATA 2006)
+  var $UNIVERSAL_GAZ = $AVOGADRO * $BOLTZMANN; // universal gas constant J mol-1 K-1
+  var $MH2O = 18.01534;                                  // molar mass of water, g mol-1
   
   public static function computeAirDensity($temperature, $pression) {
     if ($temperature < -273.15) {
