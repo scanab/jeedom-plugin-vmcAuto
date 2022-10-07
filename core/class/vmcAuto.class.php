@@ -116,7 +116,7 @@ class vmcAuto extends eqLogic {
   * Fonction exécutée automatiquement toutes les minutes par Jeedom
   */
   public static function cron() {
-		/*foreach (eqLogic::byType('vmcAuto', true) as $eqLogic) {
+		foreach (eqLogic::byType('vmcAuto', true) as $eqLogic) {
 			$autorefresh = $eqLogic->getConfiguration('autorefresh');
 			if ($eqLogic->getIsEnable() == 1 && $autorefresh != '') {
 				try {
@@ -128,7 +128,7 @@ class vmcAuto extends eqLogic {
 					log::add('vmcAuto', 'error', __('Expression cron non valide pour', __FILE__) . ' ' . $eqLogic->getHumanName() . ' : ' . $autorefresh);
 				}
 			}
-		}*/
+		}
   }
 
   /*
@@ -221,9 +221,9 @@ class vmcAuto extends eqLogic {
 	  } else {
 		  $this->deleteCmdIfNecessary('vmcState');
 	  }
-	  $this->createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 'numeric', 1, 'g/m3', 1);
-	  $this->createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 'numeric', 1, 'g/m3', 1);
-	  $this->createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Concentration H2O théorique intérieur', 'numeric', 1, 'g/m3', 1);
+	  $this->createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 'numeric', 1, 'g/m3', 0);
+	  $this->createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 'numeric', 1, 'g/m3', 0);
+	  $this->createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Concentration H2O théorique intérieur', 'numeric', 1, '%', 0);
 	  $this->createCmdInfoIfNecessary('autoState', 'Etat automatisme', 'binary', 0, '', 0);
 	  $this->createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'other', 1, 'autoState');
 	  $this->createCmdActionIfNecessary('autoOff', 'Désactiver automatisme', 1, 'other', 0, 'autoState');
@@ -340,14 +340,14 @@ class vmcAuto extends eqLogic {
 	  log::add('vmcAuto', 'debug', "concentration H2O intérieur : $cInt g/m3");
 	  
 	  $theoreticalH2OhumidityInt = self::computeH2oHumidity($this->getInteriorTemperature(), $this->getAtmosphericPressure(), $cExt);
-	  $cmdTheoreticalH2OconcentrationInt = $this->getCmd(null, 'theoreticalH2OhumidityInt');
-	  $cmdTheoreticalH2OconcentrationInt->event($theoreticalH2OhumidityInt);
-	  log::add('vmcAuto', 'debug', "concentration H2O intérieur théorique accessible : $cmdTheoreticalH2OconcentrationInt %");
+	  $cmdTheoreticalH2OhumidityInt = $this->getCmd(null, 'theoreticalH2OhumidityInt');
+	  $cmdTheoreticalH2OhumidityInt->event($theoreticalH2OhumidityInt);
+	  log::add('vmcAuto', 'debug', "concentration H2O intérieur théorique accessible : $theoreticalH2OhumidityInt %");
 	  
-	  if (isAutomatismeOn()) {
-		  if ($cInt > 70 && $cmdTheoreticalH2OconcentrationInt < 60) {
+	  if ($this->isAutomatismeOn()) {
+		  if ($cInt > 70 && $cmdTheoreticalH2OhumidityInt < 60) {
 			  $this->startVentilation();
-		  } else if ($cInt < 40 && $cmdTheoreticalH2OconcentrationInt > 50) {
+		  } else if ($cInt < 40 && $cmdTheoreticalH2OhumidityInt > 50) {
 			  $this->startVentilation();
 		  }
 	  }
@@ -452,16 +452,12 @@ class vmcAutoCmd extends cmd {
 			$eqlogic->calculate();
 			break;
 		  case 'autoOn' :
-			$eqlogic = $this->getEqLogic();
-			$infoName = $this->getConfiguration('infoName');
-			$infoCmd = $eqlogic->getCmd(null, $infoName);
-			$infoCmd->event(1);
-			break;
 		  case 'autoOff' :
 			$eqlogic = $this->getEqLogic();
 			$infoName = $this->getConfiguration('infoName');
+			$infoValue = $this->getConfiguration('infoValue') == 1 ? 1 : 0;
 			$infoCmd = $eqlogic->getCmd(null, $infoName);
-			$infoCmd->event(0);
+			$infoCmd->event($infoValue);
 			break;
 		  case 'vmcState' :
 		  case 'H2OconcentrationInt' :
