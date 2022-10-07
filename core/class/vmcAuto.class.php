@@ -232,14 +232,14 @@ class vmcAuto extends eqLogic {
   }
   
   private function createCmdInfoIfNecessary($logicalId, $name, $subType='numeric', $visible=1, $unite='', $historized=0, $value='') {
-	  $this->createCmdIfNecessary($logicalId, $name, 'info', $subType, $visible, $unite, $historized, $value);
+	  $this->createCmdIfNecessary($logicalId, $name, 'info', $subType, $visible, $unite, $historized, '', '', $value);
   }
   
-  private function createCmdActionIfNecessary($logicalId, $name, $visible=1, $subType='other', $value='', $infoName='') {
-	  $this->createCmdIfNecessary($logicalId, $name, 'action', $subType, $visible, '', 0, $value, $infoName);
+  private function createCmdActionIfNecessary($logicalId, $name, $visible=1, $subType='other', $infoValue='', $infoName='') {
+	  $this->createCmdIfNecessary($logicalId, $name, 'action', $subType, $visible, '', 0, $infoValue, $infoName);
   }
   
-  private function createCmdIfNecessary($logicalId, $name, $type, $subType, $visible=1, $unite='', $historized=0, $value='', $infoName='') {
+  private function createCmdIfNecessary($logicalId, $name, $type, $subType, $visible=1, $unite='', $historized=0, $infoValue='', $infoName='', $value='') {
 	  $cmd = $this->getCmd(null, $logicalId);
 		if (!is_object($cmd)) {
 			$cmd = new vmcAutoCmd();
@@ -253,12 +253,18 @@ class vmcAuto extends eqLogic {
 		$cmd->setType($type);
 		$cmd->setSubType($subType);
 		if ($unite != '') $cmd->setUnite($unite);
-		if ($value != '') $cmd->setValue($value);
+		if ($value != '') {
+			$cmd->setValue($value);
+		}
+		if ($infoValue != '') {
+			$cmd->setConfiguration('infoValue', $infoValue);
+		}
 		if ($infoName != '') {
-			$actionInfo = $this->getCmd(null, $infoName);
-			if (is_object($actionInfo)) {
-				$cmd->setConfiguration('infoId', $actionInfo->getId());
-			}
+			$cmd->setConfiguration('infoName', $infoName);
+//			$actionInfo = $this->getCmd(null, $infoName);
+//			if (is_object($actionInfo)) {
+//				$cmd->setConfiguration('infoId', $actionInfo->getId());
+//			}
 		}
 		$cmd->setEqLogic_id($this->getId());
 		$cmd->save();
