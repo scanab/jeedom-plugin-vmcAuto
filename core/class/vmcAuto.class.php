@@ -341,10 +341,10 @@ class vmcAuto extends eqLogic {
 	  $hysteresis = 5;
 	  if ($this->isAutomatismeOn()) {
 		  $cmdRegulationState = $this->getCmd(null, 'regulationState');
-		  if ($cInt > $maxHumidity && $cmdTheoreticalH2OhumidityInt < ($maxHumidity - $hysteresis)) {
+		  if ($cInt > $maxHumidity && $cmdTheoreticalH2OhumidityInt <= ($maxHumidity - $hysteresis)) {
 			  $this->startVentilation();
 			  $cmdRegulationState->event(1);
-		  } else if ($cInt < 40 && $cmdTheoreticalH2OhumidityInt > ($maxHumidity + $hysteresis)) {
+		  } else if ($cInt < 40 && $cmdTheoreticalH2OhumidityInt >= ($maxHumidity + $hysteresis)) {
 			  $this->startVentilation();
 			  $cmdRegulationState->event(1);
 		  } else {

@@ -214,9 +214,13 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									  </select>
 									</div>
 								</div>
+							</div>
+							<div class="form-group">
 								<div class="customCmdVmcOff">
-								  <label class="col-sm-2 control-label help" data-help="{{Sélectionnez une commande action éteignant la ventilation. Laisser vide si la ventilation a un timer}}">{{Ventilation OFF}}</label>
-								  <div class="col-sm-4">
+								  <label class="col-sm-4 control-label"{{Ventilation OFF}}>
+									<sup><i class="fas fa-question-circle tooltips" title="{{Sélectionnez une commande action éteignant la ventilation. Laisser vide si la ventilation a un timer}}"></i></sup>
+								  </label>
+								  <div class="col-sm-6">
 									<div class="input-group">
 									  <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="cmdVmcOff" />
 									  <span class="input-group-btn">
@@ -226,11 +230,11 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								  </div>
 								</div>
 								<div class="customOnTimer">
-									<label class="col-sm-2 control-label">{{Durée du timer en secondes}}
+									<label class="col-sm-4 control-label ">{{Durée du timer en secondes}}
 										<sup><i class="fas fa-question-circle tooltips" title="{{Laisser vide si pas de timer}}"></i></sup>
 									</label>
-									<div class="col-sm-4">
-										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="onTimer" placeholder="{{Paramètre n°1}}">
+									<div class="col-sm-6">
+										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="onTimer" placeholder="{{Durée}}">
 									</div>
 								</div>
 							</div>
