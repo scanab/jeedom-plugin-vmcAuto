@@ -56,8 +56,8 @@ class vmcAuto extends eqLogic {
     if ($temperature < -50.0) {
       throw new Exception(__('Le calcul de la pression de saturation en-dessous de -50° C n\'est pas possible', __FILE__));
 	}
-    $airDensity = computeAirDensity($temperature, $pression);
-    $psat = computeH2oSaturationPressure($temperature);
+    $airDensity = self::computeAirDensity($temperature, $pression);
+    $psat = self::computeH2oSaturationPressure($temperature);
     $ph2o = $psat * $humidity / 100;
     if (($ph2o > $psat) || ($ph2o > $pression)) {
       throw new Exception(__('La concentration est plus haute que la saturation', __FILE__));
@@ -71,6 +71,7 @@ class vmcAuto extends eqLogic {
 
   // calcul du taux d'humidité fonction de la température, de la pression et de la concentration en h2o
   public static function computeH2oHumidity($temperature, $pression, $h2oConcentration) {
+	log::add('vmcAuto', 'debug', "computeH2oHumidity($temperature, $pression, $h2oConcentration)");
 	$MH2O = 18.01534; // molar mass of water, g mol-1
     if ($h2oConcentration < 0) {
       throw new Exception(__('Une concentration négative n\'est pas possible', __FILE__));
@@ -78,10 +79,14 @@ class vmcAuto extends eqLogic {
     if ($temperature < -50.0) {
       throw new Exception(__('Le calcul de la pression de saturation en-dessous de -50° C n\'est pas possible', __FILE__));
 	}
-    $airDensity = computeAirDensity($temperature, $pression);
-    $psat = computeH2oSaturationPressure($temperature);
+    $airDensity = self::computeAirDensity($temperature, $pression);
+	log::add('vmcAuto', 'debug', "airDensity = $airDensity");
+    $psat = self::computeH2oSaturationPressure($temperature);
+	log::add('vmcAuto', 'debug', "psat = $psat");
 	$vmr = $h2oConcentration / $MH2O / $airDensity;
+	log::add('vmcAuto', 'debug', "vmr = $vmr");
 	$ph2o = $vmr * $pression;
+	log::add('vmcAuto', 'debug', "ph2o = $ph2o");
     if (($ph2o > $psat) || ($ph2o > $pression)) {
       throw new Exception(__('La concentration est plus haute que la saturation', __FILE__));
 	}
@@ -450,13 +455,13 @@ class vmcAutoCmd extends cmd {
 			$eqlogic = $this->getEqLogic();
 			$infoName = $this->getConfiguration('infoName');
 			$infoCmd = $eqlogic->getCmd(null, $infoName);
-			$infoCmf->event(1);
+			$infoCmd->event(1);
 			break;
 		  case 'autoOff' :
 			$eqlogic = $this->getEqLogic();
 			$infoName = $this->getConfiguration('infoName');
 			$infoCmd = $eqlogic->getCmd(null, $infoName);
-			$infoCmf->event(0);
+			$infoCmd->event(0);
 			break;
 		  case 'vmcState' :
 		  case 'H2OconcentrationInt' :
