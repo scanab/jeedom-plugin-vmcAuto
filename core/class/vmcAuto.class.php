@@ -223,7 +223,7 @@ class vmcAuto extends eqLogic {
     }
     $this->createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 'numeric', 1, 'g/m3', 0, '', 3);
     $this->createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 'numeric', 1, 'g/m3', 0, '', 3);
-    $this->createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Concentration H2O théorique intérieur', 'numeric', 1, '%', 0, '', 3);
+    $this->createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Humidité intérieure théorique accessible', 'numeric', 1, '%', 0, '', 3);
     $this->createCmdInfoIfNecessary('regulationState', 'Régulation en cours', 'binary', 0, '', 0);
     $this->createCmdInfoIfNecessary('autoState', 'Etat automatisme', 'binary', 0, '', 0);
     $this->createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'other', 1, 'autoState');
@@ -322,39 +322,39 @@ class vmcAuto extends eqLogic {
   public function calculate() {
     try {
       $cExt = self::computeH2oConcentration($this->getExteriorTemperature(), $this->getAtmosphericPressure(),$this->getExteriorHumidity());
-    $cmdConcentrationExt = $this->getCmd(null, 'H2OconcentrationExt');
-    $cmdConcentrationExt->event($cExt);
-    log::add('vmcAuto', 'debug', "concentration H2O extérieur : $cExt g/m3");
-
-    $cInt = self::computeH2oConcentration($this->getInteriorTemperature(), $this->getAtmosphericPressure(), $this->getInteriorHumidity());
-    $cmdConcentrationInt = $this->getCmd(null, 'H2OconcentrationInt');
-    $cmdConcentrationInt->event($cInt);
-    log::add('vmcAuto', 'debug', "concentration H2O intérieur : $cInt g/m3");
-    
-    $theoreticalH2OhumidityInt = self::computeH2oHumidity($this->getInteriorTemperature(), $this->getAtmosphericPressure(), $cExt);
-    $cmdTheoreticalH2OhumidityInt = $this->getCmd(null, 'theoreticalH2OhumidityInt');
-    $cmdTheoreticalH2OhumidityInt->event($theoreticalH2OhumidityInt);
-    log::add('vmcAuto', 'debug', "concentration H2O intérieur théorique accessible : $theoreticalH2OhumidityInt %");
-    
-    $maxHumidity = 70;
-    $minHumidity = 40;
-    $hysteresis = 5;
-    if ($this->isAutomatismeOn()) {
-      $cmdRegulationState = $this->getCmd(null, 'regulationState');
-      if ($cInt > $maxHumidity && $cmdTheoreticalH2OhumidityInt <= ($maxHumidity - $hysteresis)) {
-        $this->startVentilation();
-        $cmdRegulationState->event(1);
-      } else if ($cInt < 40 && $cmdTheoreticalH2OhumidityInt >= ($maxHumidity + $hysteresis)) {
-        $this->startVentilation();
-        $cmdRegulationState->event(1);
+      $cmdConcentrationExt = $this->getCmd(null, 'H2OconcentrationExt');
+      $cmdConcentrationExt->event($cExt);
+      log::add('vmcAuto', 'debug', "concentration H2O extérieur : $cExt g/m3");
+   
+      $cInt = self::computeH2oConcentration($this->getInteriorTemperature(), $this->getAtmosphericPressure(), $this->getInteriorHumidity());
+      $cmdConcentrationInt = $this->getCmd(null, 'H2OconcentrationInt');
+      $cmdConcentrationInt->event($cInt);
+      log::add('vmcAuto', 'debug', "concentration H2O intérieur : $cInt g/m3");
+      
+      $theoreticalH2OhumidityInt = self::computeH2oHumidity($this->getInteriorTemperature(), $this->getAtmosphericPressure(), $cExt);
+      $cmdTheoreticalH2OhumidityInt = $this->getCmd(null, 'theoreticalH2OhumidityInt');
+      $cmdTheoreticalH2OhumidityInt->event($theoreticalH2OhumidityInt);
+      log::add('vmcAuto', 'debug', "concentration H2O intérieur théorique accessible : $theoreticalH2OhumidityInt %");
+      
+      $maxHumidity = 70;
+      $minHumidity = 40;
+      $hysteresis = 5;
+      if ($this->isAutomatismeOn()) {
+        $cmdRegulationState = $this->getCmd(null, 'regulationState');
+        if ($cInt > $maxHumidity && $cmdTheoreticalH2OhumidityInt <= ($maxHumidity - $hysteresis)) {
+          $this->startVentilation();
+          $cmdRegulationState->event(1);
+        } else if ($cInt < 40 && $cmdTheoreticalH2OhumidityInt >= ($maxHumidity + $hysteresis)) {
+          $this->startVentilation();
+          $cmdRegulationState->event(1);
+        } else {
+          $this->stopVentilation();
+          $cmdRegulationState->event(0);
+        }
       } else {
-        $this->stopVentilation();
+        $cmdRegulationState = $this->getCmd(null, 'regulationState');
         $cmdRegulationState->event(0);
       }
-    } else {
-    $cmdRegulationState->event(0);
-    }
-    
     } catch (Exception $exc) {
       log::add('vmcAuto', 'error', $exc->getMessage());
     }    
@@ -366,8 +366,8 @@ class vmcAuto extends eqLogic {
   }
 
   private function isAutomatismeOn() {
-    $cmdId = trim(str_replace('#', '', $this->getConfiguration('autoState')));
-    return $this->getValueFromCmd($cmdId);
+    $cmdAutoState = $this->getCmd(null, 'autoState');
+    return $this->getValueFromCmd($cmdAutoState->getId());
   }
   
   private function getAtmosphericPressure() {
