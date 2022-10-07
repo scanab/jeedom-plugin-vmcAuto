@@ -329,7 +329,11 @@ class vmcAuto extends eqLogic {
 	  log::add('vmcAuto', 'debug', "concentration H2O intérieur théorique accessible : $cmdTheoreticalH2OconcentrationInt %");
 	  
 	  if (isAutomatismeOn()) {
-		  
+		  if ($cInt > 70 && $cmdTheoreticalH2OconcentrationInt < 60) {
+			  startVentilation();
+		  } else if ($cInt < 40 && $cmdTheoreticalH2OconcentrationInt > 50) {
+			  startVentilation();
+		  }
 	  }
 	  
     } catch (Exception $exc) {
