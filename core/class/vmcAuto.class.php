@@ -221,9 +221,10 @@ class vmcAuto extends eqLogic {
 	  } else {
 		  $this->deleteCmdIfNecessary('vmcState');
 	  }
-	  $this->createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 'numeric', 1, 'g/m3', 0);
-	  $this->createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 'numeric', 1, 'g/m3', 0);
-	  $this->createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Concentration H2O théorique intérieur', 'numeric', 1, '%', 0);
+	  $this->createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 'numeric', 1, 'g/m3', 0, '', 3);
+	  $this->createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 'numeric', 1, 'g/m3', 0, '', 3);
+	  $this->createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Concentration H2O théorique intérieur', 'numeric', 1, '%', 0, '', 3);
+	  $this->createCmdInfoIfNecessary('regulationState', 'Régulation en cours', 'binary', 0, '', 0);
 	  $this->createCmdInfoIfNecessary('autoState', 'Etat automatisme', 'binary', 0, '', 0);
 	  $this->createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'other', 1, 'autoState');
 	  $this->createCmdActionIfNecessary('autoOff', 'Désactiver automatisme', 1, 'other', 0, 'autoState');
@@ -236,15 +237,15 @@ class vmcAuto extends eqLogic {
 		}
   }
   
-  private function createCmdInfoIfNecessary($logicalId, $name, $subType='numeric', $visible=1, $unite='', $historized=0, $value='') {
-	  $this->createCmdIfNecessary($logicalId, $name, 'info', $subType, $visible, $unite, $historized, '', '', $value);
+  private function createCmdInfoIfNecessary($logicalId, $name, $subType='numeric', $visible=1, $unite='', $historized=0, $value='', $round='') {
+	  $this->createCmdIfNecessary($logicalId, $name, 'info', $subType, $visible, $unite, $historized, '', '', $value, $round);
   }
   
   private function createCmdActionIfNecessary($logicalId, $name, $visible=1, $subType='other', $infoValue='', $infoName='') {
 	  $this->createCmdIfNecessary($logicalId, $name, 'action', $subType, $visible, '', 0, $infoValue, $infoName);
   }
   
-  private function createCmdIfNecessary($logicalId, $name, $type, $subType, $visible=1, $unite='', $historized=0, $infoValue='', $infoName='', $value='') {
+  private function createCmdIfNecessary($logicalId, $name, $type, $subType, $visible=1, $unite='', $historized=0, $infoValue='', $infoName='', $value='', $round='') {
 	  $cmd = $this->getCmd(null, $logicalId);
 		if (!is_object($cmd)) {
 			$cmd = new vmcAutoCmd();
@@ -253,24 +254,15 @@ class vmcAuto extends eqLogic {
 			$cmd->setIsVisible($visible);
 			if ($type == 'info') {
 				$cmd->setIsHistorized($historized);
+				if ($round != '') $cmd->setConfiguration('historizeRound', $round);
 			}
 		}
 		$cmd->setType($type);
 		$cmd->setSubType($subType);
 		if ($unite != '') $cmd->setUnite($unite);
-		if ($value != '') {
-			$cmd->setValue($value);
-		}
-		if ($infoValue != '') {
-			$cmd->setConfiguration('infoValue', $infoValue);
-		}
-		if ($infoName != '') {
-			$cmd->setConfiguration('infoName', $infoName);
-//			$actionInfo = $this->getCmd(null, $infoName);
-//			if (is_object($actionInfo)) {
-//				$cmd->setConfiguration('infoId', $actionInfo->getId());
-//			}
-		}
+		if ($value != '') $cmd->setValue($value);
+		if ($infoValue != '') $cmd->setConfiguration('infoValue', $infoValue);
+		if ($infoName != '') $cmd->setConfiguration('infoName', $infoName);
 		$cmd->setEqLogic_id($this->getId());
 		$cmd->save();
   }
@@ -344,11 +336,20 @@ class vmcAuto extends eqLogic {
 	  $cmdTheoreticalH2OhumidityInt->event($theoreticalH2OhumidityInt);
 	  log::add('vmcAuto', 'debug', "concentration H2O intérieur théorique accessible : $theoreticalH2OhumidityInt %");
 	  
+	  $maxHumidity = 70;
+	  $minHumidity = 40;
+	  $hysteresis = 5;
 	  if ($this->isAutomatismeOn()) {
-		  if ($cInt > 70 && $cmdTheoreticalH2OhumidityInt < 60) {
+		  $cmdRegulationState = $this->getCmd(null, 'regulationState');
+		  if ($cInt > $maxHumidity && $cmdTheoreticalH2OhumidityInt < ($maxHumidity - $hysteresis)) {
 			  $this->startVentilation();
-		  } else if ($cInt < 40 && $cmdTheoreticalH2OhumidityInt > 50) {
+			  $cmdRegulationState->event(1);
+		  } else if ($cInt < 40 && $cmdTheoreticalH2OhumidityInt > ($maxHumidity + $hysteresis)) {
 			  $this->startVentilation();
+			  $cmdRegulationState->event(1);
+		  } else {
+			  $this->stopVentilation();
+			  $cmdRegulationState->event(0);
 		  }
 	  }
 	  
