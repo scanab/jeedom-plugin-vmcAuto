@@ -19,10 +19,10 @@
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
 
 class vmcAuto extends eqLogic {
-  const AVOGADRO = 6.02214179*pow(10, 23);                // Avogadro constant, mol-1 (NIST, CODATA 2006)
-  const BOLTZMANN = 1.3806504*pow(10, -23);               // Boltzmann constant, J K-1 (NIST, CODATA 2006)
-  const UNIVERSAL_GAZ = self::AVOGADRO * self::BOLTZMANN; // universal gas constant J mol-1 K-1
-  const MH2O = 18.01534;                                  // molar mass of water, g mol-1
+  $AVOGADRO = 6.02214179*pow(10, 23);                // Avogadro constant, mol-1 (NIST, CODATA 2006)
+  $BOLTZMANN = 1.3806504*pow(10, -23);               // Boltzmann constant, J K-1 (NIST, CODATA 2006)
+  $UNIVERSAL_GAZ = $AVOGADRO * $BOLTZMANN; // universal gas constant J mol-1 K-1
+  $MH2O = 18.01534;                                  // molar mass of water, g mol-1
   
   public static function computeAirDensity($temperature, $pression) {
     if ($temperature < -273.15) {
@@ -31,7 +31,7 @@ class vmcAuto extends eqLogic {
     if ($pression <= 0) {
       throw new Exception(__('Des pressions negatives sont impossibles', __FILE__));
 	}
-    return $pression * 100.0 / self::UNIVERSAL_GAZ / ($temperature + 273.15);
+    return $pression * 100.0 / $UNIVERSAL_GAZ / ($temperature + 273.15);
   }
   
   // H2O saturation pressure from Lowe & Ficke, 1974
@@ -62,11 +62,11 @@ class vmcAuto extends eqLogic {
       throw new Exception(__('Le calcul de la pression de saturation en-dessous de -50° C n\'est pas possible', __FILE__));
 	}
     $vmr = $ph2o / $pression;
-	return $vmr * self::MH2O * $airDensity;
+	return $vmr * $MH2O * $airDensity;
   }
 
   // calcul du taux d'humidité fonction de la température, de la pression et de la concentration en h2o
-  public static function computeH2oConcentration($temperature, $pression, $h2oConcentration) {
+  public static function computeH2oHumidity($temperature, $pression, $h2oConcentration) {
     if ($h2oConcentration < 0) {
       throw new Exception(__('Une concentration négative n\'est pas possible', __FILE__));
 	}
@@ -75,7 +75,7 @@ class vmcAuto extends eqLogic {
 	}
     $airDensity = computeAirDensity($temperature, $pression);
     $psat = computeH2oSaturationPressure($temperature);
-	$vmr = $h2oConcentration / self::MH2O / $airDensity;
+	$vmr = $h2oConcentration / $MH2O / $airDensity;
 	$ph2o = $vmr * $pression;
     if (($ph2o > $psat) || ($ph2o > $pression)) {
       throw new Exception(__('La concentration est plus haute que la saturation', __FILE__));
@@ -213,7 +213,7 @@ class vmcAuto extends eqLogic {
 	  }
 	  createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 1, 'numeric', 'g/m3', 1);
 	  createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 1, 'numeric', 'g/m3', 1);
-	  createCmdInfoIfNecessary('theoreticalH2OconcentrationInt', 'Concentration H2O théorique intérieur', 1, 'numeric', 'g/m3', 1);
+	  createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Concentration H2O théorique intérieur', 1, 'numeric', 'g/m3', 1);
 	  createCmdInfoIfNecessary('autoState', 'Etat automatisme', 0, 'boolean', '', 0);
 	  createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'default', 1, 'autoState');
 	  createCmdActionIfNecessary('autoOff', 'Désactiver automatisme', 1, 'default', 0, 'autoState');
@@ -323,9 +323,9 @@ class vmcAuto extends eqLogic {
 	  $cmdConcentrationInt->event($cInt);
 	  log::add('vmcAuto', 'debug', "concentration H2O intérieur : $cInt g/m3");
 	  
-	  $theoreticalH2OconcentrationInt = self::computeH2oConcentration($temperature, $pression, $cExt);
-	  $cmdTheoreticalH2OconcentrationInt = $this->getCmd(null, 'theoreticalH2OconcentrationInt');
-	  $cmdTheoreticalH2OconcentrationInt->event($theoreticalH2OconcentrationInt);
+	  $theoreticalH2OhumidityInt = self::computeH2oHumidity($temperature, $pression, $cExt);
+	  $cmdTheoreticalH2OconcentrationInt = $this->getCmd(null, 'theoreticalH2OhumidityInt');
+	  $cmdTheoreticalH2OconcentrationInt->event($theoreticalH2OhumidityInt);
 	  log::add('vmcAuto', 'debug', "concentration H2O intérieur théorique accessible : $cmdTheoreticalH2OconcentrationInt %");
 	  
 	  if (isAutomatismeOn()) {
@@ -438,7 +438,7 @@ class vmcAutoCmd extends cmd {
 		  case 'vmcState' :
 		  case 'H2OconcentrationInt' :
 		  case 'H2OconcentrationExt' :
-		  case 'theoreticalH2OconcentrationInt' :
+		  case 'theoreticalH2OhumidityInt' :
 		  case 'autoState' :
 		  case 'autoOn' :
 		  case 'autoOff' :
