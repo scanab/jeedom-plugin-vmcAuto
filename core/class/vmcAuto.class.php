@@ -55,7 +55,7 @@ class vmcAuto extends eqLogic {
     $airDensity = computeAirDensity($temperature, $pression);
     $psat = computeH2oSaturationPressure($temperature);
     $ph2o = $psat * $humidity / 100;
-    if ($ph2o > $psat || $ph2o > $pression)) {
+    if (($ph2o > $psat) || ($ph2o > $pression)) {
       throw new Exception(__('La concentration est plus haute que la saturation', __FILE__));
 	}
     if ($ph2o < 0.039) {
@@ -77,7 +77,7 @@ class vmcAuto extends eqLogic {
     $psat = computeH2oSaturationPressure($temperature);
 	$vmr = $h2oConcentration / self::MH2O / $airDensity;
 	$ph2o = $vmr * $pression;
-    if ($ph2o > $psat || $ph2o > $pression)) {
+    if (($ph2o > $psat) || ($ph2o > $pression)) {
       throw new Exception(__('La concentration est plus haute que la saturation', __FILE__));
 	}
     if ($ph2o < 0.039) {
