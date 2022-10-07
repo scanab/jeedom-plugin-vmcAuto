@@ -199,7 +199,7 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement après la mise à jour de l'équipement
   public function postUpdate() {
-	  createCmdActionIfNecessary('vmcON', 'ON');
+	  $this->createCmdActionIfNecessary('vmcON', 'ON');
 	  if ($this->getConfiguration('typeVmcStop') == 'cmd') {
 		  $this->createCmdActionIfNecessary('vmcOFF', 'OFF');
 	  } else {
@@ -207,16 +207,16 @@ class vmcAuto extends eqLogic {
 	  }
 	  $this->createCmdActionIfNecessary('refresh', 'Rafraichir');
 	  if ($this->getConfiguration('cmdVmcState') != '') {
-		  $this->createCmdInfoIfNecessary('vmcState', 'Etat', 1, 'info', 'boolean', '', 1, $this->getConfiguration('cmdVmcState')); // vérifier ce qu'il faut dans value : l'id ?
+		  $this->createCmdInfoIfNecessary('vmcState', 'Etat', 'boolean', 1, '', 1, $this->getConfiguration('cmdVmcState')); // vérifier ce qu'il faut dans value : l'id ?
 	  } else {
-		  deleteCmdIfNecessary('vmcState');
+		  $this->deleteCmdIfNecessary('vmcState');
 	  }
-	  $this->createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 1, 'numeric', 'g/m3', 1);
-	  $this->createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 1, 'numeric', 'g/m3', 1);
-	  $this->createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Concentration H2O théorique intérieur', 1, 'numeric', 'g/m3', 1);
-	  $this->createCmdInfoIfNecessary('autoState', 'Etat automatisme', 0, 'boolean', '', 0);
-	  $this->createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'default', 1, 'autoState');
-	  $this->createCmdActionIfNecessary('autoOff', 'Désactiver automatisme', 1, 'default', 0, 'autoState');
+	  $this->createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 'numeric', 1, 'g/m3', 1);
+	  $this->createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 'numeric', 1, 'g/m3', 1);
+	  $this->createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Concentration H2O théorique intérieur', 'numeric', 1, 'g/m3', 1);
+	  $this->createCmdInfoIfNecessary('autoState', 'Etat automatisme', 'boolean', 0, '', 0);
+	  $this->createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'other', 1, 'autoState');
+	  $this->createCmdActionIfNecessary('autoOff', 'Désactiver automatisme', 1, 'other', 0, 'autoState');
   }
   
   private function deleteCmdIfNecessary($logicalId) {
@@ -226,15 +226,15 @@ class vmcAuto extends eqLogic {
 		}
   }
   
-  private function createCmdInfoIfNecessary($logicalId, $name, $visible=1, $subType='default', $unite='', $historized=0, $value='') {
-	  $this->createCmdIfNecessary($logicalId, $name, $visible, 'info', $subType, $unite, $historized, $value);
+  private function createCmdInfoIfNecessary($logicalId, $name, $subType='numeric', $visible=1, $unite='', $historized=0, $value='') {
+	  $this->createCmdIfNecessary($logicalId, $name, 'info', $subType, $visible, $unite, $historized, $value);
   }
   
-  private function createCmdActionIfNecessary($logicalId, $name, $visible=1, $subType='default', $value='', $infoName='') {
-	  $this->createCmdIfNecessary($logicalId, $name, $visible, $type='action', $subType, '', 0, $value, $infoName);
+  private function createCmdActionIfNecessary($logicalId, $name, $visible=1, $subType='other', $value='', $infoName='') {
+	  $this->createCmdIfNecessary($logicalId, $name, 'action', $subType, $visible, '', 0, $value, $infoName);
   }
   
-  private function createCmdIfNecessary($logicalId, $name, $visible=1, $type='action', $subType='default', $unite='', $historized=0, $value='', $infoName='') {
+  private function createCmdIfNecessary($logicalId, $name, $type, $subType, $visible=1, $unite='', $historized=0, $value='', $infoName='') {
 	  $cmd = $this->getCmd(null, $logicalId);
 		if (!is_object($cmd)) {
 			$cmd = new vmcAutoCmd();
@@ -246,7 +246,7 @@ class vmcAuto extends eqLogic {
 			}
 		}
 		$cmd->setType($type);
-		if ($subType != 'default') $cmd->setSubType($subType);
+		$cmd->setSubType($subType);
 		if ($unite != '') $cmd->setUnite($unite);
 		if ($value != '') $cmd->setValue($value);
 		if ($infoName != '') {
