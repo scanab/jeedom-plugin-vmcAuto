@@ -19,10 +19,10 @@
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
 
 class vmcAuto extends eqLogic {
-  var $AVOGADRO = 6.02214179*pow(10, 23);                // Avogadro constant, mol-1 (NIST, CODATA 2006)
-  var $BOLTZMANN = 1.3806504*pow(10, -23);               // Boltzmann constant, J K-1 (NIST, CODATA 2006)
-  var $UNIVERSAL_GAZ = $AVOGADRO * $BOLTZMANN; // universal gas constant J mol-1 K-1
-  var $MH2O = 18.01534;                                  // molar mass of water, g mol-1
+  //private static $AVOGADRO = 6.02214179*pow(10, 23);                // Avogadro constant, mol-1 (NIST, CODATA 2006)
+  //private static $BOLTZMANN = 1.3806504*pow(10, -23);               // Boltzmann constant, J K-1 (NIST, CODATA 2006)
+  //private static $UNIVERSAL_GAZ = $AVOGADRO * $BOLTZMANN; // universal gas constant J mol-1 K-1
+  private static $MH2O = 18.01534;                                  // molar mass of water, g mol-1
   
   public static function computeAirDensity($temperature, $pression) {
     if ($temperature < -273.15) {
@@ -106,7 +106,7 @@ class vmcAuto extends eqLogic {
   * Fonction exécutée automatiquement toutes les minutes par Jeedom
   */
   public static function cron() {
-		foreach (eqLogic::byType('vmcAuto', true) as $eqLogic) {
+		/*foreach (eqLogic::byType('vmcAuto', true) as $eqLogic) {
 			$autorefresh = $eqLogic->getConfiguration('autorefresh');
 			if ($eqLogic->getIsEnable() == 1 && $autorefresh != '') {
 				try {
@@ -118,7 +118,7 @@ class vmcAuto extends eqLogic {
 					log::add('vmcAuto', 'error', __('Expression cron non valide pour', __FILE__) . ' ' . $eqLogic->getHumanName() . ' : ' . $autorefresh);
 				}
 			}
-		}
+		}*/
   }
 
   /*
@@ -163,15 +163,15 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement avant la mise à jour de l'équipement
   public function preUpdate() {
-	  validateMandatoryCmdInConfig('cmdPressionAtmo', 'info', 'pression atmosphérique');
-	  validateMandatoryCmdInConfig('cmdTemperatureExt', 'info', 'température extérieure');
-	  validateMandatoryCmdInConfig('cmdTemperatureInt', 'info', 'température interieure');
-	  validateMandatoryCmdInConfig('cmdHumidityExt', 'info', 'humidité extérieure');
-	  validateMandatoryCmdInConfig('cmdHumidityInt', 'info', 'humidité interieure');
-	  validateMandatoryCmdInConfig('cmdVmcOn', 'action', 'ON de la ventilation');
-	  validateOptionalCmdInConfig('cmdVmcState', 'info', 'état de la ventilation');
+	  $this->validateMandatoryCmdInConfig('cmdPressionAtmo', 'info', 'pression atmosphérique');
+	  $this->validateMandatoryCmdInConfig('cmdTemperatureExt', 'info', 'température extérieure');
+	  $this->validateMandatoryCmdInConfig('cmdTemperatureInt', 'info', 'température interieure');
+	  $this->validateMandatoryCmdInConfig('cmdHumidityExt', 'info', 'humidité extérieure');
+	  $this->validateMandatoryCmdInConfig('cmdHumidityInt', 'info', 'humidité interieure');
+	  $this->validateMandatoryCmdInConfig('cmdVmcOn', 'action', 'ON de la ventilation');
+	  $this->validateOptionalCmdInConfig('cmdVmcState', 'info', 'état de la ventilation');
 	  if ($this->getConfiguration('typeVmcStop') == 'cmd') 
-		  validateMandatoryCmdInConfig('cmdVmcOff', 'action', 'OFF de la ventilation');
+		  $this->validateMandatoryCmdInConfig('cmdVmcOff', 'action', 'OFF de la ventilation');
   }
 
   private function validateOptionalCmdInConfig($confEntry, $type, $label) {
@@ -201,22 +201,22 @@ class vmcAuto extends eqLogic {
   public function postUpdate() {
 	  createCmdActionIfNecessary('vmcON', 'ON');
 	  if ($this->getConfiguration('typeVmcStop') == 'cmd') {
-		  createCmdActionIfNecessary('vmcOFF', 'OFF');
+		  $this->createCmdActionIfNecessary('vmcOFF', 'OFF');
 	  } else {
-		  deleteCmdIfNecessary('vmcOFF');
+		  $this->deleteCmdIfNecessary('vmcOFF');
 	  }
-	  createCmdActionIfNecessary('refresh', 'Rafraichir');
+	  $this->createCmdActionIfNecessary('refresh', 'Rafraichir');
 	  if ($this->getConfiguration('cmdVmcState') != '') {
-		  createCmdInfoIfNecessary('vmcState', 'Etat', 1, 'info', 'boolean', '', 1, $this->getConfiguration('cmdVmcState')); // vérifier ce qu'il faut dans value : l'id ?
+		  $this->createCmdInfoIfNecessary('vmcState', 'Etat', 1, 'info', 'boolean', '', 1, $this->getConfiguration('cmdVmcState')); // vérifier ce qu'il faut dans value : l'id ?
 	  } else {
 		  deleteCmdIfNecessary('vmcState');
 	  }
-	  createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 1, 'numeric', 'g/m3', 1);
-	  createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 1, 'numeric', 'g/m3', 1);
-	  createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Concentration H2O théorique intérieur', 1, 'numeric', 'g/m3', 1);
-	  createCmdInfoIfNecessary('autoState', 'Etat automatisme', 0, 'boolean', '', 0);
-	  createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'default', 1, 'autoState');
-	  createCmdActionIfNecessary('autoOff', 'Désactiver automatisme', 1, 'default', 0, 'autoState');
+	  $this->createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 1, 'numeric', 'g/m3', 1);
+	  $this->createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 1, 'numeric', 'g/m3', 1);
+	  $this->createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Concentration H2O théorique intérieur', 1, 'numeric', 'g/m3', 1);
+	  $this->createCmdInfoIfNecessary('autoState', 'Etat automatisme', 0, 'boolean', '', 0);
+	  $this->createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'default', 1, 'autoState');
+	  $this->createCmdActionIfNecessary('autoOff', 'Désactiver automatisme', 1, 'default', 0, 'autoState');
   }
   
   private function deleteCmdIfNecessary($logicalId) {
@@ -227,11 +227,11 @@ class vmcAuto extends eqLogic {
   }
   
   private function createCmdInfoIfNecessary($logicalId, $name, $visible=1, $subType='default', $unite='', $historized=0, $value='') {
-	  createCmdIfNecessary($logicalId, $name, $visible, 'info', $subType, $unite, $historized, $value);
+	  $this->createCmdIfNecessary($logicalId, $name, $visible, 'info', $subType, $unite, $historized, $value);
   }
   
   private function createCmdActionIfNecessary($logicalId, $name, $visible=1, $subType='default', $value='', $infoName='') {
-	  createCmdIfNecessary($logicalId, $name, $visible, $type='action', $subType, '', 0, $value, $infoName);
+	  $this->createCmdIfNecessary($logicalId, $name, $visible, $type='action', $subType, '', 0, $value, $infoName);
   }
   
   private function createCmdIfNecessary($logicalId, $name, $visible=1, $type='action', $subType='default', $unite='', $historized=0, $value='', $infoName='') {
@@ -330,9 +330,9 @@ class vmcAuto extends eqLogic {
 	  
 	  if (isAutomatismeOn()) {
 		  if ($cInt > 70 && $cmdTheoreticalH2OconcentrationInt < 60) {
-			  startVentilation();
+			  $this->startVentilation();
 		  } else if ($cInt < 40 && $cmdTheoreticalH2OconcentrationInt > 50) {
-			  startVentilation();
+			  $this->startVentilation();
 		  }
 	  }
 	  
@@ -343,32 +343,32 @@ class vmcAuto extends eqLogic {
 
 	private function isAutomatismeOn() {
 		$cmdId = trim(str_replace('#', '', $this->getConfiguration('autoState')));
-		return getValueFromCmd($cmdId);
+		return $this->getValueFromCmd($cmdId);
 	}
 	
 	private function getAtmosphericPressure() {
 		$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdPressionAtmo')));
-		return getValueFromCmd($cmdId);
+		return $this->getValueFromCmd($cmdId);
 	}
 
 	private function getInteriorTemperature() {
 		$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdTemperatureInt')));
-		return getValueFromCmd($cmdId);
+		return $this->getValueFromCmd($cmdId);
 	}
 
 	private function getInteriorHumidity() {
 		$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdHumidityInt')));
-		return getValueFromCmd($cmdId);
+		return $this->getValueFromCmd($cmdId);
 	}
 
 	private function getExteriorTemperature() {
 		$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdTemperatureExt')));
-		return getValueFromCmd($cmdId);
+		return $this->getValueFromCmd($cmdId);
 	}
 
 	private function getExteriorHumidity() {
 		$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdHumidityExt')));
-		return getValueFromCmd($cmdId);
+		return $this->getValueFromCmd($cmdId);
 	}
 
 	private function getValueFromCmd($cmdId) {
