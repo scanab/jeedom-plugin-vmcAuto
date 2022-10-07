@@ -216,11 +216,11 @@ class vmcAuto extends eqLogic {
       $this->deleteCmdIfNecessary('vmcOFF');
     }
     $this->createCmdActionIfNecessary('refresh', 'Rafraichir');
-    if ($this->getConfiguration('cmdVmcState') != '') {
+    /*if ($this->getConfiguration('cmdVmcState') != '') {
       $this->createCmdInfoIfNecessary('vmcState', 'Etat', 'binary', 1, '', 1, $this->getConfiguration('cmdVmcState')); // vérifier ce qu'il faut dans value : l'id ?
     } else {
       $this->deleteCmdIfNecessary('vmcState');
-    }
+    }*/
     $this->createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 'numeric', 1, 'g/m3', 0, '', 3);
     $this->createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 'numeric', 1, 'g/m3', 0, '', 3);
     $this->createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Humidité intérieure théorique accessible', 'numeric', 1, '%', 0, '', 3);
