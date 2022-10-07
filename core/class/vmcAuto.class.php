@@ -220,9 +220,8 @@ class vmcAuto extends eqLogic {
 	  $this->createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 'numeric', 1, 'g/m3', 1);
 	  $this->createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Concentration H2O théorique intérieur', 'numeric', 1, 'g/m3', 1);
 	  $this->createCmdInfoIfNecessary('autoState', 'Etat automatisme', 'binary', 0, '', 0);
-	  $cmdAutoState = $this->getCmd(null, 'autoState');
-	  $this->createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'other', 1, $cmdAutoState->getId());
-	  $this->createCmdActionIfNecessary('autoOff', 'Désactiver automatisme', 1, 'other', 0, $cmdAutoState->getId());
+	  $this->createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'other', 1, 'autoState');
+	  $this->createCmdActionIfNecessary('autoOff', 'Désactiver automatisme', 1, 'other', 0, 'autoState');
   }
   
   private function deleteCmdIfNecessary($logicalId) {
@@ -257,7 +256,7 @@ class vmcAuto extends eqLogic {
 		if ($value != '') $cmd->setValue($value);
 		if ($infoName != '') {
 			$actionInfo = $this->getCmd(null, $infoName);
-			if (!is_object($actionInfo)) {
+			if (is_object($actionInfo)) {
 				$cmd->setConfiguration('infoId', $actionInfo->getId());
 			}
 		}
