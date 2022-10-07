@@ -253,6 +253,21 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									</div>
 								</div>
 							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Plage de confort}}
+									<sup><i class="fas fa-question-circle tooltips" title="{{Plage de confort d'hygrométrie}}"></i></sup>
+								</label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="minHygrometry" placeholder="40">
+									</div>
+								</div> - 
+								<div class="col-sm-3">
+									<div class="input-group">
+										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="maxHygrometry" placeholder="70">
+									</div>
+								</div>
+							</div>
 							<!--div class="form-group">
 								<label class="col-sm-4 control-label">{{Nom du paramètre n°1}}
 									<sup><i class="fas fa-question-circle tooltips" title="{{Renseignez le paramètre n°1 de l'équipement}}"></i></sup>
