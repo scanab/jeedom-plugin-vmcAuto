@@ -214,7 +214,7 @@ class vmcAuto extends eqLogic {
 	  createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 1, 'numeric', 'g/m3', 1);
 	  createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 1, 'numeric', 'g/m3', 1);
 	  createCmdInfoIfNecessary('theoreticalH2OconcentrationInt', 'Concentration H2O théorique intérieur', 1, 'numeric', 'g/m3', 1);
-	  createCmdInfoIfNecessary('autoState', 'Etat automatisme', 0, 'boolean', '', 0)
+	  createCmdInfoIfNecessary('autoState', 'Etat automatisme', 0, 'boolean', '', 0);
 	  createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'default', 1, 'autoState');
 	  createCmdActionIfNecessary('autoOff', 'Désactiver automatisme', 1, 'default', 0, 'autoState');
   }
@@ -247,7 +247,7 @@ class vmcAuto extends eqLogic {
 		}
 		$cmd->setType($type);
 		if ($subType != 'default') $cmd->setSubType($subType);
-		if ($unite != '') $cmd->setUnite($unite)
+		if ($unite != '') $cmd->setUnite($unite);
 		if ($value != '') $cmd->setValue($value);
 		if ($infoName != '') {
 			$actionInfo = $this->getCmd(null, $infoName);
@@ -425,11 +425,11 @@ class vmcAutoCmd extends cmd {
 	  switch ($this->getLogicalId()) {
 		  case 'vmcON' :
 			$eqlogic = $this->getEqLogic();
-			$eqlogic->startVentilation()
+			$eqlogic->startVentilation();
 			break;
 		  case 'vmcOFF' :
 			$eqlogic = $this->getEqLogic();
-			$eqlogic->stopVentilation()
+			$eqlogic->stopVentilation();
 			break;
 		  case 'refresh' :
 			$eqlogic = $this->getEqLogic();
