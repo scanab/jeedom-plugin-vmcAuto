@@ -339,7 +339,7 @@ class vmcAuto extends eqLogic {
 	  $cmdConcentrationInt->event($cInt);
 	  log::add('vmcAuto', 'debug', "concentration H2O intérieur : $cInt g/m3");
 	  
-	  $theoreticalH2OhumidityInt = self::computeH2oHumidity($temperature, $pression, $cExt);
+	  $theoreticalH2OhumidityInt = self::computeH2oHumidity($this->getInteriorTemperature(), $this->getAtmosphericPressure(), $cExt);
 	  $cmdTheoreticalH2OconcentrationInt = $this->getCmd(null, 'theoreticalH2OhumidityInt');
 	  $cmdTheoreticalH2OconcentrationInt->event($theoreticalH2OhumidityInt);
 	  log::add('vmcAuto', 'debug', "concentration H2O intérieur théorique accessible : $cmdTheoreticalH2OconcentrationInt %");
