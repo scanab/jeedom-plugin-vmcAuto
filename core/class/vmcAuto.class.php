@@ -179,7 +179,7 @@ class vmcAuto extends eqLogic {
 		if ($conf != '') {
 			$cmdId = trim(str_replace('#', '', $conf));
 			$cmd = cmd::byId($cmdId);
-			if (!is_object($cmd) throw new Exception(__("La commmande $label doit être une commande valide", __FILE__));
+			if (!is_object($cmd)) throw new Exception(__("La commmande $label doit être une commande valide", __FILE__));
 			if ($cmd->getType != $type) throw new Exception(__("La commmande $label doit être de type $type", __FILE__));
 		}
   }
@@ -189,10 +189,10 @@ class vmcAuto extends eqLogic {
 		if ($conf != '') {
 			$cmdId = trim(str_replace('#', '', $conf));
 			$cmd = cmd::byId($cmdId);
-			if (!is_object($cmd) throw new Exception(__("La commmande $label doit être une commande valide", __FILE__));
+			if (!is_object($cmd)) throw new Exception(__("La commmande $label doit être une commande valide", __FILE__));
 			if ($cmd->getType != $type) throw new Exception(__("La commmande $label doit être de type $type", __FILE__));
 		} else {
-			if (!is_object($cmd) throw new Exception(__("La commmande $label doit être renseignée", __FILE__));
+			if (!is_object($cmd)) throw new Exception(__("La commmande $label doit être renseignée", __FILE__));
 		}
   }
 
