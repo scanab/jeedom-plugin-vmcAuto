@@ -126,7 +126,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								</div>
 							</div>
 
-							<legend><i class="fas fa-cogs"></i> {{Paramètres spécifiques}}</legend>
+							<legend><i class="fas fa-cogs"></i> {{Paramètres d'environnement}}</legend>
 							<div class="form-group">
 								<label class="col-sm-4 control-label">{{Pression atmosphérique}}
 									<sup><i class="fas fa-question-circle tooltips" title="{{Sélectionnez une commande info retournant la pression atmosphérique}}"></i></sup>
@@ -192,7 +192,8 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									</div>
 								</div>
 							</div>
-							<div class="form-group">
+							<legend><i class="fas fa-cogs"></i> {{Paramètres d'automatisation de la ventilation}}</legend>
+							<!--div class="form-group">
 								<label class="col-sm-4 control-label">{{Etat ventilation}}
 									<sup><i class="fas fa-question-circle tooltips" title="{{Sélectionnez une commande info donnant l'état de la ventilation (optionnel)}}"></i></sup>
 								</label>
@@ -204,7 +205,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 										</span>
 									</div>
 								  </div>
-							</div>
+							</div-->
 							<div class="form-group">
 								<label class="col-sm-4 control-label">{{Ventilation ON}}
 									<sup><i class="fas fa-question-circle tooltips" title="{{Sélectionnez une commande action allumant la ventilation}}"></i></sup>

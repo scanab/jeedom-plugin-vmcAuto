@@ -209,12 +209,12 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement après la mise à jour de l'équipement
   public function postUpdate() {
-    $this->createCmdActionIfNecessary('vmcON', 'ON');
+    /*$this->createCmdActionIfNecessary('vmcON', 'ON');
     if ($this->getConfiguration('typeVmcStop') == 'cmd') {
       $this->createCmdActionIfNecessary('vmcOFF', 'OFF');
     } else {
       $this->deleteCmdIfNecessary('vmcOFF');
-    }
+    }*/
     $this->createCmdActionIfNecessary('refresh', 'Rafraichir');
     /*if ($this->getConfiguration('cmdVmcState') != '') {
       $this->createCmdInfoIfNecessary('vmcState', 'Etat', 'binary', 1, '', 1, $this->getConfiguration('cmdVmcState')); // vérifier ce qu'il faut dans value : l'id ?
@@ -468,7 +468,7 @@ class vmcAutoCmd extends cmd {
         $infoCmd->event($infoValue);
         if ($eqlogic->isRegulationActive() && $this->getLogicalId() == 'autoOff') $eqlogic->stopVentilation();
         break;
-      case 'vmcState' :
+      //case 'vmcState' :
       case 'H2OconcentrationInt' :
       case 'H2OconcentrationExt' :
       case 'theoreticalH2OhumidityInt' :
