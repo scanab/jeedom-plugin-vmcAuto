@@ -45,8 +45,8 @@ class vmcAuto extends eqLogic {
   }
   
   // calcul de la concentration d'eau en g/m3 en fonction de la température, de la pression et du taux d'humidité
-  function static computeH2oConcentration($temperature, $pression, $humidity) {
-    if (($humidity < 0)||($humidity > 100)) {
+  public static function computeH2oConcentration($temperature, $pression, $humidity) {
+    if (($humidity < 0) || ($humidity > 100)) {
       throw new Exception(__('Cette humidité relative est impossible', __FILE__));
 	}
     if ($temperature < -50.0) {
@@ -66,7 +66,7 @@ class vmcAuto extends eqLogic {
   }
 
   // calcul du taux d'humidité fonction de la température, de la pression et de la concentration en h2o
-  function static computeH2oConcentration($temperature, $pression, $h2oConcentration) {
+  public static function computeH2oConcentration($temperature, $pression, $h2oConcentration) {
     if ($h2oConcentration < 0) {
       throw new Exception(__('Une concentration négative n\'est pas possible', __FILE__));
 	}
@@ -180,7 +180,7 @@ class vmcAuto extends eqLogic {
 			$cmdId = trim(str_replace('#', '', $conf));
 			$cmd = cmd::byId($cmdId);
 			if (!is_object($cmd)) throw new Exception(__("La commmande $label doit être une commande valide", __FILE__));
-			if ($cmd->getType != $type) throw new Exception(__("La commmande $label doit être de type $type", __FILE__));
+			if ($cmd->getType() != $type) throw new Exception(__("La commmande $label doit être de type $type", __FILE__));
 		}
   }
   
@@ -190,7 +190,7 @@ class vmcAuto extends eqLogic {
 			$cmdId = trim(str_replace('#', '', $conf));
 			$cmd = cmd::byId($cmdId);
 			if (!is_object($cmd)) throw new Exception(__("La commmande $label doit être une commande valide", __FILE__));
-			if ($cmd->getType != $type) throw new Exception(__("La commmande $label doit être de type $type", __FILE__));
+			if ($cmd->getType() != $type) throw new Exception(__("La commmande $label doit être de type $type", __FILE__));
 		} else {
 			if (!is_object($cmd)) throw new Exception(__("La commmande $label doit être renseignée", __FILE__));
 		}
