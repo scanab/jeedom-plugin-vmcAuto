@@ -22,9 +22,12 @@ class vmcAuto extends eqLogic {
   //private static $AVOGADRO = 6.02214179*pow(10, 23);                // Avogadro constant, mol-1 (NIST, CODATA 2006)
   //private static $BOLTZMANN = 1.3806504*pow(10, -23);               // Boltzmann constant, J K-1 (NIST, CODATA 2006)
   //private static $UNIVERSAL_GAZ = $AVOGADRO * $BOLTZMANN; // universal gas constant J mol-1 K-1
-  private static $MH2O = 18.01534;                                  // molar mass of water, g mol-1
+  //private static $MH2O = 18.01534;                                  // molar mass of water, g mol-1
   
   public static function computeAirDensity($temperature, $pression) {
+    $AVOGADRO = 6.02214179*pow(10, 23);                // Avogadro constant, mol-1 (NIST, CODATA 2006)
+    $BOLTZMANN = 1.3806504*pow(10, -23);               // Boltzmann constant, J K-1 (NIST, CODATA 2006)
+	$UNIVERSAL_GAZ = $AVOGADRO * $BOLTZMANN; // universal gas constant J mol-1 K-1
     if ($temperature < -273.15) {
       throw new Exception(__('Il n\'y a pas de température au-dessous de 0° Kelvin', __FILE__));
 	}
@@ -46,6 +49,7 @@ class vmcAuto extends eqLogic {
   
   // calcul de la concentration d'eau en g/m3 en fonction de la température, de la pression et du taux d'humidité
   public static function computeH2oConcentration($temperature, $pression, $humidity) {
+	$MH2O = 18.01534; // molar mass of water, g mol-1
     if (($humidity < 0) || ($humidity > 100)) {
       throw new Exception(__('Cette humidité relative est impossible', __FILE__));
 	}
@@ -67,6 +71,7 @@ class vmcAuto extends eqLogic {
 
   // calcul du taux d'humidité fonction de la température, de la pression et de la concentration en h2o
   public static function computeH2oHumidity($temperature, $pression, $h2oConcentration) {
+	$MH2O = 18.01534; // molar mass of water, g mol-1
     if ($h2oConcentration < 0) {
       throw new Exception(__('Une concentration négative n\'est pas possible', __FILE__));
 	}
@@ -207,21 +212,21 @@ class vmcAuto extends eqLogic {
 	  }
 	  $this->createCmdActionIfNecessary('refresh', 'Rafraichir');
 	  if ($this->getConfiguration('cmdVmcState') != '') {
-		  $this->createCmdInfoIfNecessary('vmcState', 'Etat', 'boolean', 1, '', 1, $this->getConfiguration('cmdVmcState')); // vérifier ce qu'il faut dans value : l'id ?
+		  $this->createCmdInfoIfNecessary('vmcState', 'Etat', 'binary', 1, '', 1, $this->getConfiguration('cmdVmcState')); // vérifier ce qu'il faut dans value : l'id ?
 	  } else {
 		  $this->deleteCmdIfNecessary('vmcState');
 	  }
 	  $this->createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 'numeric', 1, 'g/m3', 1);
 	  $this->createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 'numeric', 1, 'g/m3', 1);
 	  $this->createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Concentration H2O théorique intérieur', 'numeric', 1, 'g/m3', 1);
-	  $this->createCmdInfoIfNecessary('autoState', 'Etat automatisme', 'boolean', 0, '', 0);
+	  $this->createCmdInfoIfNecessary('autoState', 'Etat automatisme', 'binary', 0, '', 0);
 	  $this->createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'other', 1, 'autoState');
 	  $this->createCmdActionIfNecessary('autoOff', 'Désactiver automatisme', 1, 'other', 0, 'autoState');
   }
   
   private function deleteCmdIfNecessary($logicalId) {
 	  $cmd = $this->getCmd(null, $logicalId);
-		if (!is_object($cmd)) {
+		if (is_object($cmd)) {
 			$cmd->remove();
 		}
   }
