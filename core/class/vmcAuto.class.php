@@ -324,12 +324,12 @@ class vmcAuto extends eqLogic {
 
   public function calculate() {
     try {
-      $cExt = self::computeH2oConcentration(getExteriorTemperature(), getAtmosphericPressure(), getExteriorHumidity());
+      $cExt = self::computeH2oConcentration($this->getExteriorTemperature(), $this->getAtmosphericPressure(),$this->getExteriorHumidity());
 	  $cmdConcentrationExt = $this->getCmd(null, 'H2OconcentrationExt');
 	  $cmdConcentrationExt->event($cExt);
 	  log::add('vmcAuto', 'debug', "concentration H2O extérieur : $cExt g/m3");
 
-	  $cInt = self::computeH2oConcentration(getInteriorTemperature(), getAtmosphericPressure(), getInteriorHumidity());
+	  $cInt = self::computeH2oConcentration($this->getInteriorTemperature(), $this->getAtmosphericPressure(), $this->getInteriorHumidity());
 	  $cmdConcentrationInt = $this->getCmd(null, 'H2OconcentrationInt');
 	  $cmdConcentrationInt->event($cInt);
 	  log::add('vmcAuto', 'debug', "concentration H2O intérieur : $cInt g/m3");
@@ -446,13 +446,23 @@ class vmcAutoCmd extends cmd {
 			$eqlogic = $this->getEqLogic();
 			$eqlogic->calculate();
 			break;
+		  case 'autoOn' :
+			$eqlogic = $this->getEqLogic();
+			$infoName = $this->getConfiguration('infoName');
+			$infoCmd = $eqlogic->getCmd(null, $infoName);
+			$infoCmf->event(1);
+			break;
+		  case 'autoOff' :
+			$eqlogic = $this->getEqLogic();
+			$infoName = $this->getConfiguration('infoName');
+			$infoCmd = $eqlogic->getCmd(null, $infoName);
+			$infoCmf->event(0);
+			break;
 		  case 'vmcState' :
 		  case 'H2OconcentrationInt' :
 		  case 'H2OconcentrationExt' :
 		  case 'theoreticalH2OhumidityInt' :
 		  case 'autoState' :
-		  case 'autoOn' :
-		  case 'autoOff' :
 			break;
 	  }
   }
