@@ -257,16 +257,19 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								<label class="col-sm-4 control-label">{{Plage de confort}}
 									<sup><i class="fas fa-question-circle tooltips" title="{{Plage de confort d'hygrométrie}}"></i></sup>
 								</label>
-								<div class="col-sm-3">
+								<div class="col-sm-1">
 									<div class="input-group">
-										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="minHygrometry" placeholder="40">&nbsp;%
-									</div>
-								</div> - 
-								<div class="col-sm-3">
-									<div class="input-group">
-										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="maxHygrometry" placeholder="70">&nbsp;%
+										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="minHygrometry" placeholder="40">
 									</div>
 								</div>
+								<div class="col-sm-1">&nbsp;%</div>
+								<div class="col-sm-2">&nbsp;-&nbsp;</div>
+								<div class="col-sm-1">
+									<div class="input-group">
+										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="maxHygrometry" placeholder="70">
+									</div>
+								</div>
+								<div class="col-sm-1">&nbsp;%</div>
 							</div>
 							<div class="form-group">
 								<label class="col-sm-4 control-label">{{Hystéresis}}
