@@ -225,14 +225,14 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								</label>
 								<div class="col-sm-6">
 								  <select class="form-control eqLogicAttr configuration typeVentilation" data-l1key="configuration" data-l2key="typeVmcStop">
-									<option value="timer">{{Timer}}</option>
-									<option value="cmd">{{Commande}}</option>
+									<option value="timer">{{Extinction par timer}}</option>
+									<option value="cmd">{{Commande d'extinction}}</option>
 								  </select>
 								</div>
 							</div>
 							<div class="form-group">
 								<div class="customCmdVmcOff">
-								  <label class="col-sm-4 control-label"{{Ventilation OFF}}>
+								  <label class="col-sm-4 control-label">{{Ventilation OFF}}
 									<sup><i class="fas fa-question-circle tooltips" title="{{Sélectionnez une commande action éteignant la ventilation. Laisser vide si la ventilation a un timer}}"></i></sup>
 								  </label>
 								  <div class="col-sm-6">
@@ -259,14 +259,24 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								</label>
 								<div class="col-sm-3">
 									<div class="input-group">
-										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="minHygrometry" placeholder="40">
+										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="minHygrometry" placeholder="40">&nbsp;%
 									</div>
 								</div> - 
 								<div class="col-sm-3">
 									<div class="input-group">
-										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="maxHygrometry" placeholder="70">
+										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="maxHygrometry" placeholder="70">&nbsp;%
 									</div>
 								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Hystéresis}}
+									<sup><i class="fas fa-question-circle tooltips" title="{{Hystérésis en pourcentage ou valeur absolue}}"></i></sup>
+								</label>
+								<div class="col-sm-6">
+									<div class="input-group">
+										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="hysteresis" placeholder="5%">
+									</div>
+								</div
 							</div>
 							<!--div class="form-group">
 								<label class="col-sm-4 control-label">{{Nom du paramètre n°1}}
