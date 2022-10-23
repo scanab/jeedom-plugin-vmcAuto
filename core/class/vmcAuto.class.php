@@ -343,10 +343,15 @@ class vmcAuto extends eqLogic {
       if ($this->isAutomatismeOn()) {
         log::add('vmcAuto', 'debug', "Automatisme is ON");
         $cmdRegulationState = $this->getCmd(null, 'regulationState');
+        log::add('vmcAuto', 'debug', "humidityInt : $humidityInt / cmdTheoreticalH2OhumidityInt : $cmdTheoreticalH2OhumidityInt / maxHumidity : $maxHumidity / minHumidity : $minHumidity");
         if ($humidityInt > $maxHumidity && $cmdTheoreticalH2OhumidityInt <= ($maxHumidity - $hysteresis)) {
+          log::add('vmcAuto', 'debug', '$humidityInt > $maxHumidity && $cmdTheoreticalH2OhumidityInt <= ($maxHumidity - $hysteresis)');
+          log::add('vmcAuto', 'debug', "$humidityInt > $maxHumidity && $cmdTheoreticalH2OhumidityInt <= ($maxHumidity - $hysteresis)");
           $this->startVentilation();
           $cmdRegulationState->event(1);
         } else if ($humidityInt < 40 && $cmdTheoreticalH2OhumidityInt >= ($maxHumidity + $hysteresis)) {
+          log::add('vmcAuto', 'debug', '$humidityInt < 40 && $cmdTheoreticalH2OhumidityInt >= ($maxHumidity + $hysteresis)');
+          log::add('vmcAuto', 'debug', "$humidityInt < 40 && $cmdTheoreticalH2OhumidityInt >= ($maxHumidity + $hysteresis)");
           $this->startVentilation();
           $cmdRegulationState->event(1);
         } else {
