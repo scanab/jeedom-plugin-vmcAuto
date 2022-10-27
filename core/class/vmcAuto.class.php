@@ -165,15 +165,17 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement avant la création de l'équipement
   public function preInsert() {
+	log::add('vmcAuto', 'debug', "eq.preInsert()");
   }
 
   // Fonction exécutée automatiquement après la création de l'équipement
   public function postInsert() {
+	log::add('vmcAuto', 'debug', "eq.postInsert()");
   }
 
   // Fonction exécutée automatiquement avant la mise à jour de l'équipement
   public function preUpdate() {
-	log::add('vmcAuto', 'debug', $this->getId() . " - preUpdate()");
+	log::add('vmcAuto', 'debug', $this->getId() . " - eq.preUpdate()");
     $this->validateMandatoryCmdInConfig('cmdPressionAtmo', 'info', 'pression atmosphérique');
     $this->validateMandatoryCmdInConfig('cmdTemperatureExt', 'info', 'température extérieure');
     $this->validateMandatoryCmdInConfig('cmdTemperatureInt', 'info', 'température interieure');
@@ -210,7 +212,7 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement après la mise à jour de l'équipement
   public function postUpdate() {
-	log::add('vmcAuto', 'debug', $this->getId() . " - postUpdate()");
+	log::add('vmcAuto', 'debug', $this->getId() . " - eq.postUpdate()");
   }
   
   private function deleteCmdIfNecessary($logicalId) {
@@ -253,7 +255,7 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement avant la sauvegarde (création ou mise à jour) de l'équipement
   public function preSave() {
-	log::add('vmcAuto', 'debug', $this->getId() . " - preSave()");
+	log::add('vmcAuto', 'debug', $this->getId() . " - eq.preSave()");
     if ($this->getConfiguration('autorefresh') == '') {
       $this->setConfiguration('autorefresh', '* * * * *');
     }
@@ -261,7 +263,7 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement après la sauvegarde (création ou mise à jour) de l'équipement
   public function postSave() {
-	log::add('vmcAuto', 'debug', $this->getId() . " - postSave()");
+	log::add('vmcAuto', 'debug', $this->getId() . " - eq.postSave()");
     /*$this->createCmdActionIfNecessary('vmcON', 'ON');
     if ($this->getConfiguration('typeVmcStop') == 'cmd') {
       $this->createCmdActionIfNecessary('vmcOFF', 'OFF');
@@ -461,11 +463,13 @@ class vmcAutoCmd extends cmd {
   */
 
   public function postSave() {
-	log::add('vmcAuto', 'debug', $this->getId() . "cmd.postSave()");
+	log::add('vmcAuto', 'debug', $this->getId() . " - cmd.postSave()");
+	log::add('vmcAuto', 'debug', "configuration : " . $this->getConfiguration());
   }
 
   public function preSave() {
-	log::add('vmcAuto', 'debug', $this->getId() . "cmd.preSave()");
+	log::add('vmcAuto', 'debug', $this->getId() . " - cmd.preSave()");
+	log::add('vmcAuto', 'debug', "configuration : " . $this->getConfiguration());
   }
 
   // Exécution d'une commande
