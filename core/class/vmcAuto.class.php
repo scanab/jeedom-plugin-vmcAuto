@@ -71,7 +71,7 @@ class vmcAuto extends eqLogic {
 
   // calcul du taux d'humidité fonction de la température, de la pression et de la concentration en h2o
   public static function computeH2oHumidity($temperature, $pression, $h2oConcentration) {
-    log::add('vmcAuto', 'debug', "computeH2oHumidity($temperature, $pression, $h2oConcentration)");
+    //log::add('vmcAuto', 'debug', "computeH2oHumidity($temperature, $pression, $h2oConcentration)");
     $MH2O = 18.01534; // molar mass of water, g mol-1
     if ($h2oConcentration < 0) {
       throw new Exception(__('Une concentration négative n\'est pas possible', __FILE__));
@@ -80,13 +80,13 @@ class vmcAuto extends eqLogic {
       throw new Exception(__('Le calcul de la pression de saturation en-dessous de -50° C n\'est pas possible', __FILE__));
     }
     $airDensity = self::computeAirDensity($temperature, $pression);
-    log::add('vmcAuto', 'debug', "airDensity = $airDensity");
+    //log::add('vmcAuto', 'debug', "airDensity = $airDensity");
     $psat = self::computeH2oSaturationPressure($temperature);
-    log::add('vmcAuto', 'debug', "psat = $psat");
+    //log::add('vmcAuto', 'debug', "psat = $psat");
     $vmr = $h2oConcentration / $MH2O / $airDensity;
-    log::add('vmcAuto', 'debug', "vmr = $vmr");
+    //log::add('vmcAuto', 'debug', "vmr = $vmr");
     $ph2o = $vmr * $pression;
-    log::add('vmcAuto', 'debug', "ph2o = $ph2o");
+    //log::add('vmcAuto', 'debug', "ph2o = $ph2o");
     if (($ph2o > $psat) || ($ph2o > $pression)) {
       throw new Exception(__('La concentration est plus haute que la saturation', __FILE__));
     }
@@ -165,17 +165,14 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement avant la création de l'équipement
   public function preInsert() {
-	log::add('vmcAuto', 'debug', "eq.preInsert()");
   }
 
   // Fonction exécutée automatiquement après la création de l'équipement
   public function postInsert() {
-	log::add('vmcAuto', 'debug', "eq.postInsert()");
   }
 
   // Fonction exécutée automatiquement avant la mise à jour de l'équipement
   public function preUpdate() {
-	log::add('vmcAuto', 'debug', $this->getId() . " - eq.preUpdate()");
     $this->validateMandatoryCmdInConfig('cmdPressionAtmo', 'info', 'pression atmosphérique');
     $this->validateMandatoryCmdInConfig('cmdTemperatureExt', 'info', 'température extérieure');
     $this->validateMandatoryCmdInConfig('cmdTemperatureInt', 'info', 'température interieure');
@@ -212,52 +209,6 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement après la mise à jour de l'équipement
   public function postUpdate() {
-	log::add('vmcAuto', 'debug', $this->getId() . " - eq.postUpdate()");
-  }
-  
-  private function deleteCmdIfNecessary($logicalId) {
-    $cmd = $this->getCmd(null, $logicalId);
-    if (is_object($cmd)) {
-      $cmd->remove();
-    }
-  }
-  
-  private function createCmdInfoIfNecessary($logicalId, $name, $subType='numeric', $visible=1, $unite='', $historized=0, $value='', $round='') {
-    $this->createCmdIfNecessary($logicalId, $name, 'info', $subType, $visible, $unite, $historized, '', '', $value, $round);
-  }
-  
-  private function createCmdActionIfNecessary($logicalId, $name, $visible=1, $subType='other', $infoValue='', $infoName='') {
-	$value = '';
-	if ($infoName != '') {
-		$cmdValue = $this->getCmd('info', $infoName);
-        if (is_object($cmdValue)) {
-	      $value = $cmdValue->getId();
-		}
-	}
-    $this->createCmdIfNecessary($logicalId, $name, 'action', $subType, $visible, '', 0, $infoValue, $infoName, $value);
-  }
-  
-  private function createCmdIfNecessary($logicalId, $name, $type, $subType, $visible=1, $unite='', $historized=0, $infoValue='', $infoName='', $value='', $round='') {
-	log::add('vmcAuto', 'debug', $this->getId() . " : createCmdIfNecessary($logicalId, $name, $type, $subType, $visible, $unite, $historized, $infoValue, $infoName, $value, $round)");
-    $cmd = $this->getCmd(null, $logicalId);
-    if (!is_object($cmd)) {
-      $cmd = new vmcAutoCmd();
-      $cmd->setLogicalId($logicalId);
-      $cmd->setName(__($name, __FILE__));
-      $cmd->setIsVisible($visible);
-      if ($type == 'info') {
-        $cmd->setIsHistorized($historized);
-        if ($round != '') $cmd->setConfiguration('historizeRound', $round);
-      }
-    }
-    $cmd->setType($type);
-    $cmd->setSubType($subType);
-    if ($unite != '') $cmd->setUnite($unite);
-    if ($value != '') $cmd->setValue($value);
-    if ($infoValue != '') $cmd->setConfiguration('infoValue', $infoValue);
-    if ($infoName != '') $cmd->setConfiguration('infoName', $infoName);
-    $cmd->setEqLogic_id($this->getId());
-    $cmd->save();
   }
 
   // Fonction exécutée automatiquement avant la sauvegarde (création ou mise à jour) de l'équipement
@@ -269,20 +220,19 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement après la sauvegarde (création ou mise à jour) de l'équipement
   public function postSave() {
-//    $this->createCmdActionIfNecessary('refresh', 'Rafraichir');
     $cmd = $this->getCmd(null, 'refresh');
     if (!is_object($cmd)) {
       $cmd = new vmcAutoCmd();
       $cmd->setLogicalId('refresh');
       $cmd->setName(__('Rafraichir', __FILE__));
       $cmd->setIsVisible(1);
+      $cmd->setOrder(0);
 	}
     $cmd->setType('action');
     $cmd->setSubType('other');
     $cmd->setEqLogic_id($this->getId());
     $cmd->save();
 
-//    $this->createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 'numeric', 1, 'g/m3', 0, '', 3);
     $cmd = $this->getCmd(null, 'H2OconcentrationInt');
     if (!is_object($cmd)) {
       $cmd = new vmcAutoCmd();
@@ -293,13 +243,13 @@ class vmcAuto extends eqLogic {
 	  $cmd->setConfiguration('historizeRound', 3);
       $cmd->setTemplate('dashboard', 'core::line');
       $cmd->setTemplate('mobile', 'core::line');
+      $cmd->setOrder(5);
 	}
     $cmd->setType('info');
     $cmd->setSubType('numeric');
     $cmd->setEqLogic_id($this->getId());
     $cmd->save();
 
-//    $this->createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 'numeric', 1, 'g/m3', 0, '', 3);
     $cmd = $this->getCmd(null, 'H2OconcentrationExt');
     if (!is_object($cmd)) {
       $cmd = new vmcAutoCmd();
@@ -310,13 +260,13 @@ class vmcAuto extends eqLogic {
 	  $cmd->setConfiguration('historizeRound', 3);
       $cmd->setTemplate('dashboard', 'core::line');
       $cmd->setTemplate('mobile', 'core::line');
+      $cmd->setOrder(4);
 	}
     $cmd->setType('info');
     $cmd->setSubType('numeric');
     $cmd->setEqLogic_id($this->getId());
     $cmd->save();
 
-//    $this->createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Humidité intérieure théorique accessible', 'numeric', 1, '%', 0, '', 3);
     $cmd = $this->getCmd(null, 'theoreticalH2OhumidityInt');
     if (!is_object($cmd)) {
       $cmd = new vmcAutoCmd();
@@ -327,13 +277,13 @@ class vmcAuto extends eqLogic {
 	  $cmd->setConfiguration('historizeRound', 3);
       $cmd->setTemplate('dashboard', 'core::line');
       $cmd->setTemplate('mobile', 'core::line');
+      $cmd->setOrder(6);
 	}
     $cmd->setType('info');
     $cmd->setSubType('numeric');
     $cmd->setEqLogic_id($this->getId());
     $cmd->save();
 	
-//    $this->createCmdInfoIfNecessary('regulationState', 'Régulation en cours', 'binary', 0, '', 0);
     $cmd = $this->getCmd(null, 'regulationState');
     if (!is_object($cmd)) {
       $cmd = new vmcAutoCmd();
@@ -342,13 +292,13 @@ class vmcAuto extends eqLogic {
       $cmd->setIsVisible(1);
       $cmd->setTemplate('dashboard', 'core::line');
       $cmd->setTemplate('mobile', 'core::line');
+      $cmd->setOrder(7);
 	}
     $cmd->setType('info');
     $cmd->setSubType('binary');
     $cmd->setEqLogic_id($this->getId());
     $cmd->save();
 	
-//    $this->createCmdInfoIfNecessary('autoState', 'Etat automatisme', 'binary', 0, '', 0);
     $cmd = $this->getCmd(null, 'autoState');
     if (!is_object($cmd)) {
       $cmd = new vmcAutoCmd();
@@ -357,13 +307,13 @@ class vmcAuto extends eqLogic {
       $cmd->setIsVisible(0);
       $cmd->setTemplate('dashboard', 'core::line');
       $cmd->setTemplate('mobile', 'core::line');
+      $cmd->setOrder(3);
 	}
     $cmd->setType('info');
     $cmd->setSubType('binary');
     $cmd->setEqLogic_id($this->getId());
     $cmd->save();
 	
-//	$this->createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'other', '1', 'autoState');
     $cmd = $this->getCmd(null, 'autoOn');
     if (!is_object($cmd)) {
       $cmd = new vmcAutoCmd();
@@ -372,6 +322,7 @@ class vmcAuto extends eqLogic {
       $cmd->setIsVisible(1);
       $cmd->setTemplate('dashboard', 'core::binarySwitch');
       $cmd->setTemplate('mobile', 'core::binarySwitch');
+      $cmd->setOrder(1);
 	}
     $cmd->setType('action');
     $cmd->setSubType('other');
@@ -381,7 +332,6 @@ class vmcAuto extends eqLogic {
     $cmd->setValue($this->getCmd('info', 'autoState')->getId());
     $cmd->save();
     	
-//    $this->createCmdActionIfNecessary('autoOff', 'Désactiver automatisme', 1, 'other', '0', 'autoState');
     $cmd = $this->getCmd(null, 'autoOff');
     if (!is_object($cmd)) {
       $cmd = new vmcAutoCmd();
@@ -390,6 +340,7 @@ class vmcAuto extends eqLogic {
       $cmd->setIsVisible(1);
       $cmd->setTemplate('dashboard', 'core::binarySwitch');
       $cmd->setTemplate('mobile', 'core::binarySwitch');
+      $cmd->setOrder(2);
 	}
     $cmd->setType('action');
     $cmd->setSubType('other');
