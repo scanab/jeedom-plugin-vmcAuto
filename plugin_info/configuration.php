@@ -22,7 +22,7 @@ if (!isConnect()) {
   die();
 }
 ?>
-<form class="form-horizontal">
+<!--form class="form-horizontal">
   <fieldset>
     <div class="form-group">
       <label class="col-md-4 control-label">{{Global param 1}}
@@ -53,4 +53,4 @@ if (!isConnect()) {
       </div>
     </div>
   </fieldset>
-</form>
+</form-->

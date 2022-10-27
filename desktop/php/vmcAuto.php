@@ -192,7 +192,64 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									</div>
 								</div>
 							</div>
-							<legend><i class="fas fa-cogs"></i> {{Paramètres d'automatisation de la ventilation}}</legend>
+							
+							<legend><i class="fas fa-cogs"></i> {{Paramètres d'automatisation}}</legend>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Plage de confort}}
+									<sup><i class="fas fa-question-circle tooltips" title="{{Plage de confort d'hygrométrie}}"></i></sup>
+								</label>
+								<div class="col-sm-2">
+									<div class="input-group">
+										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="minHygrometry" placeholder="40">
+									</div>
+								</div>
+								<div class="col-sm-1">&nbsp;%</div>
+								<div class="col-sm-2">
+									<div class="input-group">
+										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="maxHygrometry" placeholder="70">
+									</div>
+								</div>
+								<div class="col-sm-1">&nbsp;%</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Hystéresis}}
+									<sup><i class="fas fa-question-circle tooltips" title="{{Hystérésis en pourcentage ou valeur absolue}}"></i></sup>
+								</label>
+								<div class="col-sm-6">
+									<div class="input-group">
+										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="hysteresis" placeholder="5%">
+									</div>
+								</div>
+							</div>
+							<!-- Exemple de champ de saisie du cron d'auto-actualisation avec assistant -->
+							<!-- La fonction cron de la classe du plugin doit contenir le code prévu pour que ce champ soit fonctionnel -->
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Auto-actualisation}}
+									<sup><i class="fas fa-question-circle tooltips" title="{{Fréquence de rafraîchissement des commandes infos de l'équipement}}"></i></sup>
+								</label>
+								<div class="col-sm-6">
+									<div class="input-group">
+										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="autorefresh" placeholder="{{Cliquer sur ? pour afficher l'assistant cron}}">
+										<span class="input-group-btn">
+											<a class="btn btn-default cursor jeeHelper roundedRight" data-helper="cron" title="Assistant cron">
+												<i class="fas fa-question-circle"></i>
+											</a>
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Partie droite de l'onglet "Équipement" -->
+						<!-- Affiche un champ de commentaire par défaut mais vous pouvez y mettre ce que vous voulez -->
+						<div class="col-lg-6">
+							<legend><i class="fas fa-info"></i> {{Informations}}</legend>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Description}}</label>
+								<div class="col-sm-6">
+									<textarea class="form-control eqLogicAttr autogrow" data-l1key="comment"></textarea>
+								</div>
+							</div>
 							<!--div class="form-group">
 								<label class="col-sm-4 control-label">{{Etat ventilation}}
 									<sup><i class="fas fa-question-circle tooltips" title="{{Sélectionnez une commande info donnant l'état de la ventilation (optionnel)}}"></i></sup>
@@ -251,62 +308,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									<div class="col-sm-6">
 										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="onTimer" placeholder="{{Durée}}">
 									</div>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-sm-4 control-label">{{Plage de confort}}
-									<sup><i class="fas fa-question-circle tooltips" title="{{Plage de confort d'hygrométrie}}"></i></sup>
-								</label>
-								<div class="col-sm-2">
-									<div class="input-group">
-										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="minHygrometry" placeholder="40">
-									</div>
-								</div>
-								<div class="col-sm-1">&nbsp;%</div>
-								<div class="col-sm-2">
-									<div class="input-group">
-										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="maxHygrometry" placeholder="70">
-									</div>
-								</div>
-								<div class="col-sm-1">&nbsp;%</div>
-							</div>
-							<div class="form-group">
-								<label class="col-sm-4 control-label">{{Hystéresis}}
-									<sup><i class="fas fa-question-circle tooltips" title="{{Hystérésis en pourcentage ou valeur absolue}}"></i></sup>
-								</label>
-								<div class="col-sm-6">
-									<div class="input-group">
-										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="hysteresis" placeholder="5%">
-									</div>
-								</div
-							</div>
-							<!-- Exemple de champ de saisie du cron d'auto-actualisation avec assistant -->
-							<!-- La fonction cron de la classe du plugin doit contenir le code prévu pour que ce champ soit fonctionnel -->
-							<div class="form-group">
-								<label class="col-sm-4 control-label">{{Auto-actualisation}}
-									<sup><i class="fas fa-question-circle tooltips" title="{{Fréquence de rafraîchissement des commandes infos de l'équipement}}"></i></sup>
-								</label>
-								<div class="col-sm-6">
-									<div class="input-group">
-										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="autorefresh" placeholder="{{Cliquer sur ? pour afficher l'assistant cron}}">
-										<span class="input-group-btn">
-											<a class="btn btn-default cursor jeeHelper roundedRight" data-helper="cron" title="Assistant cron">
-												<i class="fas fa-question-circle"></i>
-											</a>
-										</span>
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<!-- Partie droite de l'onglet "Équipement" -->
-						<!-- Affiche un champ de commentaire par défaut mais vous pouvez y mettre ce que vous voulez -->
-						<div class="col-lg-6">
-							<legend><i class="fas fa-info"></i> {{Informations}}</legend>
-							<div class="form-group">
-								<label class="col-sm-4 control-label">{{Description}}</label>
-								<div class="col-sm-6">
-									<textarea class="form-control eqLogicAttr autogrow" data-l1key="comment"></textarea>
 								</div>
 							</div>
 						</div>
