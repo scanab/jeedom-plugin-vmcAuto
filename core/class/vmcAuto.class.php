@@ -376,7 +376,7 @@ class vmcAuto extends eqLogic {
     $cmd->setType('action');
     $cmd->setSubType('other');
     $cmd->setEqLogic_id($this->getId());
-    $cmd->setConfiguration('infoValue', 1);
+    $cmd->setConfiguration('infoValue', '1');
     $cmd->setConfiguration('infoName', 'autoState');
     $cmd->setValue($this->getCmd('info', 'autoState')->getId());
     $cmd->save();
@@ -394,7 +394,7 @@ class vmcAuto extends eqLogic {
     $cmd->setType('action');
     $cmd->setSubType('other');
     $cmd->setEqLogic_id($this->getId());
-    $cmd->setConfiguration('infoValue', 1);
+    $cmd->setConfiguration('infoValue', '0');
     $cmd->setConfiguration('infoName', 'autoState');
     $cmd->setValue($this->getCmd('info', 'autoState')->getId());
     $cmd->save();
@@ -492,12 +492,12 @@ class vmcAuto extends eqLogic {
     }    
   }
 
-  private function isRegulationActive() {
+  public function isRegulationActive() {
     $cmdRegulationState = $this->getCmd(null, 'regulationState');
     return $this->getValueFromCmd($cmdRegulationState->getId());
   }
 
-  private function isAutomatismeOn() {
+  public function isAutomatismeOn() {
     $cmdAutoState = $this->getCmd(null, 'autoState');
     return $this->getValueFromCmd($cmdAutoState->getId());
   }
