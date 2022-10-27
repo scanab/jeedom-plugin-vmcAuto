@@ -218,7 +218,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								</label>
 								<div class="col-sm-6">
 									<div class="input-group">
-										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="seuilDeclenchement" placeholder="5%">
+										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="seuilDeclenchement" placeholder="5">
 									</div>
 								</div>
 							</div>
@@ -326,7 +326,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 							<tr>
 								<th class="hidden-xs" style="min-width:50px;width:70px;">ID</th>
 								<th style="min-width:200px;width:350px;">{{Nom}}</th>
-								<!--th>{{Type}}</th-->
+								<th>{{Type}}</th>
 								<th style="min-width:260px;">{{Options}}</th>
 								<th>{{Etat}}</th>
 								<th style="min-width:80px;width:200px;">{{Actions}}</th>
