@@ -231,7 +231,7 @@ class vmcAuto extends eqLogic {
 	if ($infoName != '') {
 		$cmdValue = cmd::byLogicalId($infoName, 'vmcAuto');
         if (is_object($cmdValue)) {
-	      $value = $cmdValue.getId();
+	      $value = $cmdValue->getId();
 		}
 	}
     $this->createCmdIfNecessary($logicalId, $name, 'action', $subType, $visible, '', 0, $infoValue, $infoName, $value);
