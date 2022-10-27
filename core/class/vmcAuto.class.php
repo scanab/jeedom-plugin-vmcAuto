@@ -209,6 +209,7 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement après la mise à jour de l'équipement
   public function postUpdate() {
+	log::add('vmcAuto', 'debug', "postUpdate()");
     /*$this->createCmdActionIfNecessary('vmcON', 'ON');
     if ($this->getConfiguration('typeVmcStop') == 'cmd') {
       $this->createCmdActionIfNecessary('vmcOFF', 'OFF');
@@ -246,6 +247,7 @@ class vmcAuto extends eqLogic {
   }
   
   private function createCmdIfNecessary($logicalId, $name, $type, $subType, $visible=1, $unite='', $historized=0, $infoValue='', $infoName='', $value='', $round='') {
+	log::add('vmcAuto', 'debug', "createCmdIfNecessary($logicalId, $name, $type, $subType, $visible, $unite, $historized, $infoValue, $infoName, $value, $round)");
     $cmd = $this->getCmd(null, $logicalId);
     if (!is_object($cmd)) {
       $cmd = new vmcAutoCmd();
@@ -264,12 +266,12 @@ class vmcAuto extends eqLogic {
     if ($infoValue != '') $cmd->setConfiguration('infoValue', $infoValue);
     if ($infoName != '') $cmd->setConfiguration('infoName', $infoName);
     $cmd->setEqLogic_id($this->getId());
-	log::add('vmcAuto', 'debug', "createCmdIfNecessary : " . cmd::cmdToHumanReadable($cmd));
     $cmd->save();
   }
 
   // Fonction exécutée automatiquement avant la sauvegarde (création ou mise à jour) de l'équipement
   public function preSave() {
+	log::add('vmcAuto', 'debug', "preSave()");
     if ($this->getConfiguration('autorefresh') == '') {
       $this->setConfiguration('autorefresh', '* * * * *');
     }
@@ -277,6 +279,7 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement après la sauvegarde (création ou mise à jour) de l'équipement
   public function postSave() {
+	log::add('vmcAuto', 'debug', "postSave()");
   }
 
   // Fonction exécutée automatiquement avant la suppression de l'équipement
