@@ -212,12 +212,13 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								<div class="col-sm-1">&nbsp;%</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-4 control-label">{{Hystéresis}}
-									<sup><i class="fas fa-question-circle tooltips" title="{{Hystérésis en pourcentage ou valeur absolue}}"></i></sup>
+								<label class="col-sm-4 control-label">{{Seuil de déclenchement}}
+									<!--sup><i class="fas fa-question-circle tooltips" title="{{Seuil de déclenchement en pourcentage ou valeur absolue}}"></i></sup-->
+									<sup><i class="fas fa-question-circle tooltips" title="{{Seuil de déclenchement}}"></i></sup>
 								</label>
 								<div class="col-sm-6">
 									<div class="input-group">
-										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="hysteresis" placeholder="5%">
+										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="seuilDeclenchement" placeholder="5%">
 									</div>
 								</div>
 							</div>

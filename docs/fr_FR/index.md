@@ -1,6 +1,8 @@
-# Plugin template
+# Plugin VMC Auto
 
-Ce "template de plugin" sert de base à la réalisation de plugins pour **Jeedom**.
+Ce plugin sert à controler une ventilation en fonction de la température intérieure/extérieure ainsi que du taux d'humidité intérieur/extérieur.
+Le principe est le suivant :
+
 
 La documentation générale relative à la conception de plugin est consultable [ici](https://doc.jeedom.com/fr_FR/dev/).
 
