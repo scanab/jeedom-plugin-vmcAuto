@@ -173,6 +173,7 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement avant la mise à jour de l'équipement
   public function preUpdate() {
+	log::add('vmcAuto', 'debug', $this->getId() . "preUpdate()");
     $this->validateMandatoryCmdInConfig('cmdPressionAtmo', 'info', 'pression atmosphérique');
     $this->validateMandatoryCmdInConfig('cmdTemperatureExt', 'info', 'température extérieure');
     $this->validateMandatoryCmdInConfig('cmdTemperatureInt', 'info', 'température interieure');
@@ -209,7 +210,7 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement après la mise à jour de l'équipement
   public function postUpdate() {
-	log::add('vmcAuto', 'debug', "postUpdate()");
+	log::add('vmcAuto', 'debug', $this->getId() . "postUpdate()");
     /*$this->createCmdActionIfNecessary('vmcON', 'ON');
     if ($this->getConfiguration('typeVmcStop') == 'cmd') {
       $this->createCmdActionIfNecessary('vmcOFF', 'OFF');
@@ -247,7 +248,7 @@ class vmcAuto extends eqLogic {
   }
   
   private function createCmdIfNecessary($logicalId, $name, $type, $subType, $visible=1, $unite='', $historized=0, $infoValue='', $infoName='', $value='', $round='') {
-	log::add('vmcAuto', 'debug', "createCmdIfNecessary($logicalId, $name, $type, $subType, $visible, $unite, $historized, $infoValue, $infoName, $value, $round)");
+	log::add('vmcAuto', 'debug', $this->getId() . " : createCmdIfNecessary($logicalId, $name, $type, $subType, $visible, $unite, $historized, $infoValue, $infoName, $value, $round)");
     $cmd = $this->getCmd(null, $logicalId);
     if (!is_object($cmd)) {
       $cmd = new vmcAutoCmd();
@@ -271,7 +272,7 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement avant la sauvegarde (création ou mise à jour) de l'équipement
   public function preSave() {
-	log::add('vmcAuto', 'debug', "preSave()");
+	log::add('vmcAuto', 'debug', $this->getId() . "preSave()");
     if ($this->getConfiguration('autorefresh') == '') {
       $this->setConfiguration('autorefresh', '* * * * *');
     }
@@ -279,7 +280,7 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement après la sauvegarde (création ou mise à jour) de l'équipement
   public function postSave() {
-	log::add('vmcAuto', 'debug', "postSave()");
+	log::add('vmcAuto', 'debug', $this->getId() . "postSave()");
   }
 
   // Fonction exécutée automatiquement avant la suppression de l'équipement
@@ -458,6 +459,14 @@ class vmcAutoCmd extends cmd {
     return true;
   }
   */
+
+  public function postSave() {
+	log::add('vmcAuto', 'debug', $this->getId() . "cmd.postSave()");
+  }
+
+  public function preSave() {
+	log::add('vmcAuto', 'debug', $this->getId() . "cmd.preSave()");
+  }
 
   // Exécution d'une commande
   public function execute($_options = array()) {
