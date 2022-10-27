@@ -173,7 +173,7 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement avant la mise à jour de l'équipement
   public function preUpdate() {
-	log::add('vmcAuto', 'debug', $this->getId() . "preUpdate()");
+	log::add('vmcAuto', 'debug', $this->getId() . " - preUpdate()");
     $this->validateMandatoryCmdInConfig('cmdPressionAtmo', 'info', 'pression atmosphérique');
     $this->validateMandatoryCmdInConfig('cmdTemperatureExt', 'info', 'température extérieure');
     $this->validateMandatoryCmdInConfig('cmdTemperatureInt', 'info', 'température interieure');
@@ -210,26 +210,7 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement après la mise à jour de l'équipement
   public function postUpdate() {
-	log::add('vmcAuto', 'debug', $this->getId() . "postUpdate()");
-    /*$this->createCmdActionIfNecessary('vmcON', 'ON');
-    if ($this->getConfiguration('typeVmcStop') == 'cmd') {
-      $this->createCmdActionIfNecessary('vmcOFF', 'OFF');
-    } else {
-      $this->deleteCmdIfNecessary('vmcOFF');
-    }*/
-    $this->createCmdActionIfNecessary('refresh', 'Rafraichir');
-    /*if ($this->getConfiguration('cmdVmcState') != '') {
-      $this->createCmdInfoIfNecessary('vmcState', 'Etat', 'binary', 1, '', 1, $this->getConfiguration('cmdVmcState')); // vérifier ce qu'il faut dans value : l'id ?
-    } else {
-      $this->deleteCmdIfNecessary('vmcState');
-    }*/
-    $this->createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 'numeric', 1, 'g/m3', 0, '', 3);
-    $this->createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 'numeric', 1, 'g/m3', 0, '', 3);
-    $this->createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Humidité intérieure théorique accessible', 'numeric', 1, '%', 0, '', 3);
-    $this->createCmdInfoIfNecessary('regulationState', 'Régulation en cours', 'binary', 0, '', 0);
-    $this->createCmdInfoIfNecessary('autoState', 'Etat automatisme', 'binary', 0, '', 0);
-    $this->createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'other', 1, 'autoState');
-    $this->createCmdActionIfNecessary('autoOff', 'Désactiver automatisme', 1, 'other', 0, 'autoState');
+	log::add('vmcAuto', 'debug', $this->getId() . " - postUpdate()");
   }
   
   private function deleteCmdIfNecessary($logicalId) {
@@ -272,7 +253,7 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement avant la sauvegarde (création ou mise à jour) de l'équipement
   public function preSave() {
-	log::add('vmcAuto', 'debug', $this->getId() . "preSave()");
+	log::add('vmcAuto', 'debug', $this->getId() . " - preSave()");
     if ($this->getConfiguration('autorefresh') == '') {
       $this->setConfiguration('autorefresh', '* * * * *');
     }
@@ -280,7 +261,26 @@ class vmcAuto extends eqLogic {
 
   // Fonction exécutée automatiquement après la sauvegarde (création ou mise à jour) de l'équipement
   public function postSave() {
-	log::add('vmcAuto', 'debug', $this->getId() . "postSave()");
+	log::add('vmcAuto', 'debug', $this->getId() . " - postSave()");
+    /*$this->createCmdActionIfNecessary('vmcON', 'ON');
+    if ($this->getConfiguration('typeVmcStop') == 'cmd') {
+      $this->createCmdActionIfNecessary('vmcOFF', 'OFF');
+    } else {
+      $this->deleteCmdIfNecessary('vmcOFF');
+    }*/
+    $this->createCmdActionIfNecessary('refresh', 'Rafraichir');
+    /*if ($this->getConfiguration('cmdVmcState') != '') {
+      $this->createCmdInfoIfNecessary('vmcState', 'Etat', 'binary', 1, '', 1, $this->getConfiguration('cmdVmcState')); // vérifier ce qu'il faut dans value : l'id ?
+    } else {
+      $this->deleteCmdIfNecessary('vmcState');
+    }*/
+    $this->createCmdInfoIfNecessary('H2OconcentrationInt', 'Concentration H2O intérieur', 'numeric', 1, 'g/m3', 0, '', 3);
+    $this->createCmdInfoIfNecessary('H2OconcentrationExt', 'Concentration H2O extérieur', 'numeric', 1, 'g/m3', 0, '', 3);
+    $this->createCmdInfoIfNecessary('theoreticalH2OhumidityInt', 'Humidité intérieure théorique accessible', 'numeric', 1, '%', 0, '', 3);
+    $this->createCmdInfoIfNecessary('regulationState', 'Régulation en cours', 'binary', 0, '', 0);
+    $this->createCmdInfoIfNecessary('autoState', 'Etat automatisme', 'binary', 0, '', 0);
+    $this->createCmdActionIfNecessary('autoOn', 'Activer automatisme', 1, 'other', 1, 'autoState');
+    $this->createCmdActionIfNecessary('autoOff', 'Désactiver automatisme', 1, 'other', 0, 'autoState');
   }
 
   // Fonction exécutée automatiquement avant la suppression de l'équipement
