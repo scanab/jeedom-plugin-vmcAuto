@@ -464,12 +464,12 @@ class vmcAutoCmd extends cmd {
 
   public function postSave() {
 	log::add('vmcAuto', 'debug', $this->getId() . " - cmd.postSave()");
-	log::add('vmcAuto', 'debug', "configuration : " . $this->getConfiguration());
+	log::add('vmcAuto', 'debug', "configuration : " . json_encode($this->getConfiguration()));
   }
 
   public function preSave() {
 	log::add('vmcAuto', 'debug', $this->getId() . " - cmd.preSave()");
-	log::add('vmcAuto', 'debug', "configuration : " . $this->getConfiguration());
+	log::add('vmcAuto', 'debug', "configuration : " . json_encode($this->getConfiguration()));
   }
 
   // Exécution d'une commande
