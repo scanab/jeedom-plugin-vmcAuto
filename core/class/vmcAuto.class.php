@@ -264,6 +264,7 @@ class vmcAuto extends eqLogic {
     if ($infoValue != '') $cmd->setConfiguration('infoValue', $infoValue);
     if ($infoName != '') $cmd->setConfiguration('infoName', $infoName);
     $cmd->setEqLogic_id($this->getId());
+	log::add('vmcAuto', 'debug', "createCmdIfNecessary : " . json_encode($cmd));
     $cmd->save();
   }
 
