@@ -251,19 +251,19 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									<textarea class="form-control eqLogicAttr autogrow" data-l1key="comment"></textarea>
 								</div>
 							</div>
-							<!--div class="form-group">
+							<div class="form-group">
 								<label class="col-sm-4 control-label">{{Etat ventilation}}
-									<sup><i class="fas fa-question-circle tooltips" title="{{Sélectionnez une commande info donnant l'état de la ventilation (optionnel)}}"></i></sup>
+									<sup><i class="fas fa-question-circle tooltips" title="{{Sélectionnez une commande info binaire donnant l'état de la ventilation (optionnel)}}"></i></sup>
 								</label>
 								<div class="col-sm-6">
-									<div class="input-group">
+									<div class="input-group" id="vmcStateInputGroup">
 										<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="cmdVmcState" />
 										<span class="input-group-btn">
 											<a class="btn btn-default cursor listCmdInfo" title="Rechercher une commande"><i class="fas fa-list-alt"></i></a>
 										</span>
 									</div>
 								  </div>
-							</div-->
+							</div>
 							<div class="form-group">
 								<label class="col-sm-4 control-label">{{Ventilation ON}}
 									<sup><i class="fas fa-question-circle tooltips" title="{{Sélectionnez une commande action allumant la ventilation}}"></i></sup>

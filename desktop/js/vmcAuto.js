@@ -30,6 +30,13 @@ $(".listCmdInfo").on('click', function () {
   });
 });
 
+$("#vmcStateInputGroup").off('click', '.listCmdInfo').on('click', '.listCmdInfo', function () {
+  var el = $(this).closest('div').find('.eqLogicAttr[data-l1key=configuration]');
+  jeedom.cmd.getSelectModal({ cmd: { type: 'info', subType: 'binary' } }, function (result) {
+    el.val(result.human);
+  });
+});
+
 $(".listCmdAction").on('click', function () {
   var el = $(this).closest('div').find('.eqLogicAttr[data-l1key=configuration]');
   jeedom.cmd.getSelectModal({ cmd: { type: 'action' } }, function (result) {

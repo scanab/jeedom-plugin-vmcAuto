@@ -418,13 +418,13 @@ class vmcAuto extends eqLogic {
         $cmdRegulationState = $this->getCmd(null, 'regulationState');
         log::add('vmcAuto', 'debug', "humidityInt : $humidityInt / theoreticalH2OhumidityInt : $theoreticalH2OhumidityInt / maxHumidity : $maxHumidity / minHumidity : $minHumidity");
         if ($humidityInt > $maxHumidity && $theoreticalH2OhumidityInt <= ($humidityInt - $seuilDeclenchement)) {
-          log::add('vmcAuto', 'debug', '$humidityInt > $maxHumidity && $theoreticalH2OhumidityInt <= ($maxHumidity - $seuilDeclenchement)');
-          log::add('vmcAuto', 'debug', "$humidityInt > $maxHumidity && $theoreticalH2OhumidityInt <= ($maxHumidity - $seuilDeclenchement)");
+          log::add('vmcAuto', 'debug', '$humidityInt > $maxHumidity && $theoreticalH2OhumidityInt <= ($humidityInt - $seuilDeclenchement)');
+          log::add('vmcAuto', 'debug', "$humidityInt > $maxHumidity && $theoreticalH2OhumidityInt <= " . ($humidityInt - $seuilDeclenchement));
           $this->startVentilation();
           $cmdRegulationState->event(1);
         } else if ($humidityInt < $minHumidity && $theoreticalH2OhumidityInt >= ($humidityInt + $seuilDeclenchement)) {
-          log::add('vmcAuto', 'debug', '$humidityInt < $minHumidity && $theoreticalH2OhumidityInt >= ($maxHumidity + $seuilDeclenchement)');
-          log::add('vmcAuto', 'debug', "$humidityInt < $minHumidity && $theoreticalH2OhumidityInt >= ($maxHumidity + $seuilDeclenchement)");
+          log::add('vmcAuto', 'debug', '$humidityInt < $minHumidity && $theoreticalH2OhumidityInt >= ($humidityInt + $seuilDeclenchement)');
+          log::add('vmcAuto', 'debug', "$humidityInt < $minHumidity && $theoreticalH2OhumidityInt >= " . ($humidityInt + $seuilDeclenchement));
           $this->startVentilation();
           $cmdRegulationState->event(1);
         } else {
