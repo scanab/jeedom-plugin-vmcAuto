@@ -69,4 +69,5 @@ Si votre Jeedom n'est pas en mesure de controler votre VMC, vous pouvez utiliser
 
 
 > **Note**
+> 
 > L'auteur de ce plugin ne garantit pas la justesse des conversions. Il n'est pas responsable d'un dommage causé par un résultat faux.
