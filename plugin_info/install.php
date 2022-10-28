@@ -25,7 +25,7 @@ function vmcAuto_install() {
 function vmcAuto_update() {
 	foreach (eqLogic::byType('vmcAuto') as $eqLogic) {
 		// renommage de de la configuration 'typeVmcOff' en 'typeVmc'
-		if (renameConfiguration($eqLogic, 'typeVmcOff', 'typeVmc')) {
+		if (renameConfiguration($eqLogic, 'typeVmcStop', 'typeVmc')) {
 			$eqLogic->save();
 		}
 		// correction des valeurs de configuration 'typeVmc'
