@@ -19,14 +19,9 @@
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
 
 class vmcAuto extends eqLogic {
-  //private static $AVOGADRO = 6.02214179*pow(10, 23);                // Avogadro constant, mol-1 (NIST, CODATA 2006)
-  //private static $BOLTZMANN = 1.3806504*pow(10, -23);               // Boltzmann constant, J K-1 (NIST, CODATA 2006)
-  //private static $UNIVERSAL_GAZ = $AVOGADRO * $BOLTZMANN; // universal gas constant J mol-1 K-1
-  //private static $MH2O = 18.01534;                                  // molar mass of water, g mol-1
-  
   public static function computeAirDensity($temperature, $pression) {
-    $AVOGADRO = 6.02214179*pow(10, 23);                // Avogadro constant, mol-1 (NIST, CODATA 2006)
-    $BOLTZMANN = 1.3806504*pow(10, -23);               // Boltzmann constant, J K-1 (NIST, CODATA 2006)
+    $AVOGADRO = 6.02214179*pow(10, 23);      // Avogadro constant, mol-1 (NIST, CODATA 2006)
+    $BOLTZMANN = 1.3806504*pow(10, -23);     // Boltzmann constant, J K-1 (NIST, CODATA 2006)
     $UNIVERSAL_GAZ = $AVOGADRO * $BOLTZMANN; // universal gas constant J mol-1 K-1
     if ($temperature < -273.15) {
       throw new Exception(__('Il n\'y a pas de température au-dessous de 0° Kelvin', __FILE__));
