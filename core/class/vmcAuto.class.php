@@ -452,6 +452,11 @@ class vmcAuto extends eqLogic {
     $cmdAutoState = $this->getCmd(null, 'autoState');
     return $this->getValueFromCmd($cmdAutoState->getId());
   }
+
+  public function isVmcOn() {
+    $cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdVmcState')));
+    return $this->getValueFromCmd($cmdId);
+  }
   
   private function getAtmosphericPressure() {
     $cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdPressionAtmo')));
@@ -486,22 +491,35 @@ class vmcAuto extends eqLogic {
   }
 
   public function startVentilation() {
-    log::add('vmcAuto', 'debug', "Start ventilation");
     $cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdVmcOn')));
     if ($cmdId == '') return false;
     $cmd = cmd::byId($cmdId);
     if (!is_object($cmd)) return false;
-    return $cmd->execCmd();
+    if ($this->getConfiguration('typeVmcStop') == 'timer') {
+      if (!$this->isVmcOn()) {
+        log::add('vmcAuto', 'info', "Start ventilation");
+      } else {
+        log::add('vmcAuto', 'debug', "Relance du timer de la ventilation");
+	  }
+      return $cmd->execCmd();
+    } else {
+      if (!$this->isVmcOn()) {
+        log::add('vmcAuto', 'info', "Start ventilation");
+        return $cmd->execCmd();
+      } else {
+        log::add('vmcAuto', 'debug', "Ventilation déja allumée");
+      }
+    }
   }
 
   public function stopVentilation() {
-    log::add('vmcAuto', 'debug', "Stop ventilation");
     $typeStop = $this->getConfiguration('typeVmcStop');
     if ($typeStop != 'cmd') return false;
     $cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdVmcOff')));
     if ($cmdId == '') return false;
     $cmd = cmd::byId($cmdId);
     if (!is_object($cmd)) return false;
+    log::add('vmcAuto', 'info', "Stop ventilation");
     return $cmd->execCmd();
   }
 
