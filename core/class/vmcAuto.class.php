@@ -279,6 +279,8 @@ class vmcAuto extends eqLogic {
       $cmd->setTemplate('mobile', 'core::line');
       $cmd->setOrder(6);
 	}
+    $cmd->setConfiguration('minValue', '0');
+    $cmd->setConfiguration('maxValue', '100');
     $cmd->setType('info');
     $cmd->setSubType('numeric');
     $cmd->setEqLogic_id($this->getId());
