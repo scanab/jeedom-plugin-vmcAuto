@@ -11,8 +11,8 @@
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,
 	"maxDependancyInstallTime" : 0,
-	"changelog" : "https://github.com/scanab/jeedom-plugin-networks/#language#/changelog",
-	"documentation" : "https://github.com/scanab/jeedom-plugin-networks/#language#/",
+	"changelog" : "https://github.com/scanab/jeedom-plugin-vmcAuto/#language#/changelog",
+	"documentation" : "https://github.com/scanab/jeedom-plugin-vmcAuto/#language#/",
 	"link" : {
 		"forum":"Lien vers le forum"
 	},
