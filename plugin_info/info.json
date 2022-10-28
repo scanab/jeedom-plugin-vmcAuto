@@ -2,7 +2,7 @@
 	"id" : "vmcAuto",
 	"name" : "VMC",
 	"description" : {
-		"fr_FR": "Plugin permettant la gestion de la vitesse d'une VMC en fonction de la pression athmosphérique, de la températures et du taux d'humidité"
+		"fr_FR": "Plugin permettant la gestion de la vitesse d'une VMC en fonction de la pression athmosphérique, de la températures et du taux d'humidité. Le plugin calcule la concentration (en g/m3) d'eau dans l'air extérieur et la compare à celle de l'air intérieur afin de savoir si il faut déclencher la ventilation. Le plugin fonctionne idéalement avec une VMC commandable par Jeedom, mais peut aussi servir pour déclencher des alertes demandant d'aérer (cf. doc)."
 	},
 	"licence" : "AGPL",
 	"author" : "Scanab",
@@ -11,8 +11,8 @@
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,
 	"maxDependancyInstallTime" : 0,
-	"changelog" : "https://github.com/scanab/jeedom-plugin-networks/#language#/changelog",
-	"documentation" : "https://github.com/scanab/jeedom-plugin-networks/#language#/",
+	"changelog" : "https://scanab.github.io/jeedom-plugin-vmcAuto/#language#/changelog",
+	"documentation" : "https://scanab.github.io/jeedom-plugin-vmcAuto/#language#/",
 	"link" : {
 		"forum":"Lien vers le forum"
 	},
