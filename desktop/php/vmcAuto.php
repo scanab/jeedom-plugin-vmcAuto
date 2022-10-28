@@ -265,6 +265,18 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								  </div>
 							</div>
 							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Type ventilation}}
+									<sup><i class="fas fa-question-circle tooltips" title="{{Sélectionnez le type de la VMC}}"></i></sup>
+								</label>
+								<div class="col-sm-6">
+								  <select class="form-control eqLogicAttr configuration typeVentilation" data-l1key="configuration" data-l2key="typeVmc">
+									<option value="timer">{{Extinction par timer}}</option>
+									<!--option value="2speed">{{2 vitesses}}</option-->
+									<option value="cmdOnOff">{{Commande d'extinction}}</option>
+								  </select>
+								</div>
+							</div>
+							<div class="form-group">
 								<label class="col-sm-4 control-label">{{Ventilation ON}}
 									<sup><i class="fas fa-question-circle tooltips" title="{{Sélectionnez une commande action allumant la ventilation}}"></i></sup>
 								</label>
@@ -277,38 +289,25 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									</div>
 								</div>
 							</div>
-							<div class="form-group">
-								<label class="col-sm-4 control-label">{{Type ventilation}}
-									<sup><i class="fas fa-question-circle tooltips" title="{{Sélectionnez le type d'arrêt de la VMC}}"></i></sup>
+							<div class="form-group customCmdVmcOff">
+								<label class="col-sm-4 control-label">{{Ventilation OFF}}
+									<sup><i class="fas fa-question-circle tooltips" title="{{Sélectionnez une commande action éteignant la ventilation. Laisser vide si la ventilation a un timer}}"></i></sup>
 								</label>
 								<div class="col-sm-6">
-								  <select class="form-control eqLogicAttr configuration typeVentilation" data-l1key="configuration" data-l2key="typeVmcStop">
-									<option value="timer">{{Extinction par timer}}</option>
-									<option value="cmd">{{Commande d'extinction}}</option>
-								  </select>
+									<div class="input-group">
+										<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="cmdVmcOff" />
+										<span class="input-group-btn">
+											<a class="btn btn-default cursor listCmdAction" title="Rechercher une commande"><i class="fas fa-list-alt"></i></a>
+										</span>
+									</div>
 								</div>
 							</div>
-							<div class="form-group">
-								<div class="customCmdVmcOff">
-								  <label class="col-sm-4 control-label">{{Ventilation OFF}}
-									<sup><i class="fas fa-question-circle tooltips" title="{{Sélectionnez une commande action éteignant la ventilation. Laisser vide si la ventilation a un timer}}"></i></sup>
-								  </label>
-								  <div class="col-sm-6">
-									<div class="input-group">
-									  <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="cmdVmcOff" />
-									  <span class="input-group-btn">
-										<a class="btn btn-default cursor listCmdAction" title="Rechercher une commande"><i class="fas fa-list-alt"></i></a>
-									  </span>
-									</div>
-								  </div>
-								</div>
-								<div class="customOnTimer">
-									<label class="col-sm-4 control-label ">{{Durée du timer en secondes}}
-										<sup><i class="fas fa-question-circle tooltips" title="{{Laisser vide si pas de timer}}"></i></sup>
-									</label>
-									<div class="col-sm-6">
-										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="onTimer" placeholder="{{Durée}}">
-									</div>
+							<div class="form-group customOnTimer">
+								<label class="col-sm-4 control-label ">{{Durée du timer en secondes}}
+									<sup><i class="fas fa-question-circle tooltips" title="{{Laisser vide si pas de timer}}"></i></sup>
+								</label>
+								<div class="col-sm-6">
+									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="onTimer" placeholder="{{Durée}}">
 								</div>
 							</div>
 						</div>

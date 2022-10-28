@@ -180,7 +180,7 @@ class vmcAuto extends eqLogic {
     $this->validateMandatoryCmdInConfig('cmdHumidityInt', 'info', 'humidité interieure');
     $this->validateMandatoryCmdInConfig('cmdVmcOn', 'action', 'ON de la ventilation');
     $this->validateOptionalCmdInConfig('cmdVmcState', 'info', 'état de la ventilation');
-    if ($this->getConfiguration('typeVmcStop') == 'cmd') 
+    if ($this->getConfiguration('typeVmc') == 'cmdOnOff') 
       $this->validateMandatoryCmdInConfig('cmdVmcOff', 'action', 'OFF de la ventilation');
   }
 
@@ -497,26 +497,28 @@ class vmcAuto extends eqLogic {
     if ($cmdId == '') return false;
     $cmd = cmd::byId($cmdId);
     if (!is_object($cmd)) return false;
-    if ($this->getConfiguration('typeVmcStop') == 'timer') {
+    if ($this->getConfiguration('typeVmc') == 'timer') {
       if (!$this->isVmcOn()) {
         log::add('vmcAuto', 'info', "Start ventilation");
       } else {
         log::add('vmcAuto', 'debug', "Relance du timer de la ventilation");
 	  }
       return $cmd->execCmd();
-    } else {
+    } else if ($this->getConfiguration('typeVmc') == 'cmdOnOff') {
       if (!$this->isVmcOn()) {
         log::add('vmcAuto', 'info', "Start ventilation");
         return $cmd->execCmd();
       } else {
         log::add('vmcAuto', 'debug', "Ventilation déja allumée");
       }
-    }
+    } else {
+        log::add('vmcAuto', 'error', "Type de VMC inconnue : " . $this->getConfiguration('typeVmc'));
+	}
   }
 
   public function stopVentilation() {
-    $typeStop = $this->getConfiguration('typeVmcStop');
-    if ($typeStop != 'cmd') return false;
+    $typeVmc = $this->getConfiguration('typeVmc');
+    if ($typeVmc != 'cmdOnOff') return false;
     $cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdVmcOff')));
     if ($cmdId == '') return false;
     $cmd = cmd::byId($cmdId);
