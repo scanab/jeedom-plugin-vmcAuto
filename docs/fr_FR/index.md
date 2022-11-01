@@ -58,15 +58,18 @@ Dans l'onglet commande, vous retrouvez la liste des commandes créées automatiq
 -   **Humidité intérieure théorique accessible** : info numérique indiquant le taux d'humidité calculé si l'air extérieur était mis à la température de l'air intérieur,
 -   **Régulation en cours** : info binaire indiquant si l'equipement a déclenché la ventilation.
 
-# Tips
+# TipFAQs
 
-## Alerte aération
+## Comment définir une alerte d'aération si je n'ai pas de VMC commandable via Jeedom ?
 
 Si votre Jeedom n'est pas en mesure de controler votre VMC, vous pouvez utiliser ce plugin afin de définir une alerte demandant d'aérer. Il faut pour cela :
 
 -   définir un virtuel "aération" (avec deux actions on et off mettant à jour une info binaire d'état) qui remplacera la VMC dans le plugin.
 -   définir un scénario dont le déclencheur est l'état du virtuel précédement créé, et qui selon la valeur de celui-ci lance les alertes
 
+## Paramétrer une VMC double vitessse ?
+
+Il faut choisir un type de VMC avec 'commande d'extinction' puis choisir la vitesse 2 comme commande ON et la vitesse 1 comme commande OFF.
 
 > **Note**
 > 
