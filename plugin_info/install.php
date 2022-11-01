@@ -23,8 +23,35 @@ function vmcAuto_install() {
 
 // Fonction exécutée automatiquement après la mise à jour du plugin
 function vmcAuto_update() {
+	foreach (eqLogic::byType('vmcAuto') as $eqLogic) {
+		// renommage de de la configuration 'typeVmcOff' en 'typeVmc'
+		if (renameConfiguration($eqLogic, 'typeVmcStop', 'typeVmc')) {
+			$eqLogic->save();
+		}
+		// correction des valeurs de configuration 'typeVmc'
+		if ($eqLogic->getConfiguration('typeVmc') == 'cmd') {
+			$eqLogic->setConfiguration('typeVmc', 'cmdOnOff');
+			$eqLogic->save();
+		}
+	}
 }
 
 // Fonction exécutée automatiquement après la suppression du plugin
 function vmcAuto_remove() {
+}
+
+function renameConfiguration($eqLogic, $from, $to) {
+	if ($eqLogic->getConfiguration($from) != '') {
+		if ($eqLogic->getConfiguration($to) == '') {
+			log::add('vmcAuto', 'info', $eqLogic->getHumanName() . " - Rennomage de la configuration $from en $to");
+			$eqLogic->setConfiguration($to, $eqLogic->getConfiguration($from));
+			$eqLogic->setConfiguration($from, null);
+			return true;
+		} else {
+			log::add('vmcAuto', 'debug', $eqLogic->getHumanName() . " - impossible de rennomer la configuration $from en $to : la cible existe déja");
+		}
+	} else {
+		log::add('vmcAuto', 'debug', $eqLogic->getHumanName() . " - impossible de rennomer la configuration $from en $to : la source est inexistante");
+	}
+	return false;
 }

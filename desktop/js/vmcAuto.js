@@ -13,12 +13,12 @@
 * You should have received a copy of the GNU General Public License
 * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 */
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=typeVmcStop]').on('change', function () {
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=typeVmc]').on('change', function () {
   $('.customCmdVmcOff').hide();
   $('.customOnTimer').hide();
   if ($(this).value() === 'timer') {
     $('.customOnTimer').show();
-  } else if ($(this).value() === 'cmd') {
+  } else if ($(this).value() === 'cmdOnOff') {
     $('.customCmdVmcOff').show();
   }
 });
