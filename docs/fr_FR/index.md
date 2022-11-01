@@ -18,7 +18,7 @@ La configuration des équipements vmcAuto est accessible à partir du menu plugi
 
 ![vmcAuto2](../images/vmcAuto2.png)
 
-Voilà à quoi ressemble la page du plugin Networks (ici avec déjà 1 équipement) :
+Voilà à quoi ressemble la page du plugin vmcAuto (ici avec déjà 1 équipement) :
 
 ![vmcAuto3](../images/vmcAuto3.png)
 
