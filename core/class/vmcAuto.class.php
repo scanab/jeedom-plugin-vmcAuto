@@ -44,6 +44,7 @@ class vmcAuto extends eqLogic {
   
   // calcul de la concentration d'eau en g/m3 en fonction de la température, de la pression et du taux d'humidité
   public static function computeH2oConcentration($temperature, $pression, $humidity) {
+    log::add('vmcAuto', 'debug', "computeH2oConcentration($temperature, $pression, $humidity)");
     $MH2O = 18.01534; // molar mass of water, g mol-1
     if (($humidity < 0) || ($humidity > 100)) {
       throw new Exception(__('Cette humidité relative est impossible', __FILE__));
@@ -66,7 +67,7 @@ class vmcAuto extends eqLogic {
 
   // calcul du taux d'humidité fonction de la température, de la pression et de la concentration en h2o
   public static function computeH2oHumidity($temperature, $pression, $h2oConcentration) {
-    //log::add('vmcAuto', 'debug', "computeH2oHumidity($temperature, $pression, $h2oConcentration)");
+    log::add('vmcAuto', 'debug', "computeH2oHumidity($temperature, $pression, $h2oConcentration)");
     $MH2O = 18.01534; // molar mass of water, g mol-1
     if ($h2oConcentration < 0) {
       throw new Exception(__('Une concentration négative n\'est pas possible', __FILE__));
