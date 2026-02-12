@@ -392,7 +392,7 @@ class vmcAuto extends eqLogic {
 
   public function calculate() {
     try {
-      log::add('vmcAuto', 'debug', "Traitement de l'equipement : " . $this->getId());
+      log::add('vmcAuto', 'debug', "Traitement de l'equipement : " . $this->getHumanName() . " (" . $this->getId() . ")");
 		
       $cExt = self::computeH2oConcentration($this->getExteriorTemperature(), $this->getAtmosphericPressure(),$this->getExteriorHumidity());
       $cmdConcentrationExt = $this->getCmd(null, 'H2OconcentrationExt');
@@ -464,9 +464,9 @@ class vmcAuto extends eqLogic {
   }
 
   private function getInteriorTemperature() {
-	$cmdConf = $this->getConfiguration('cmdTemperatureInt');
+	  $cmdConf = $this->getConfiguration('cmdTemperatureInt');
     $cmdId = trim(str_replace('#', '', $cmdConf));
-	log::add('vmcAuto', 'debug', 'getInteriorTemperature() : $cmdConf / $cmdId');
+    log::add('vmcAuto', 'debug', "getInteriorTemperature() : $cmdConf / $cmdId");
     return $this->getValueFromCmd($cmdId);
   }
 
