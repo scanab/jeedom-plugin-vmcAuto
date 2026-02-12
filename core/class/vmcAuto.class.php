@@ -464,10 +464,16 @@ class vmcAuto extends eqLogic {
   }
 
   private function getInteriorTemperature() {
-	  $cmdConf = $this->getConfiguration('cmdTemperatureInt');
-    $cmdId = trim(str_replace('#', '', $cmdConf));
-    log::add('vmcAuto', 'debug', "getInteriorTemperature() : $cmdConf / $cmdId");
-    return $this->getValueFromCmd($cmdId);
+	  $cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdTemperatureInt')));
+    log::add('vmcAuto', 'debug', "getInteriorTemperature() / cmdTemperatureInt=$cmdId");
+    $cmd = cmd::byId($cmdId);
+    if (is_object($cmd)) {
+      $res = $cmd->execCmd();
+      log::add('vmcAuto', 'debug', "interiorTemperature : $res");
+      return $res;
+    }
+    log::add('vmcAuto', 'debug', "cmd is not an object");
+    return null;
   }
 
   private function getInteriorHumidity() {
