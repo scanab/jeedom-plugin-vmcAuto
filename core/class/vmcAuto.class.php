@@ -56,7 +56,7 @@ class vmcAuto extends eqLogic {
     $psat = self::computeH2oSaturationPressure($temperature);
     $ph2o = $psat * $humidity / 100;
     if (($ph2o > $psat) || ($ph2o > $pression)) {
-      throw new Exception(__('La concentration est plus haute que la saturation', __FILE__));
+      throw new Exception(__('La concentration est plus haute que la saturation', __FILE__), 1001);
     }
     if ($ph2o < 0.039) {
       throw new Exception(__('Le calcul de la pression de saturation en-dessous de -50° C n\'est pas possible', __FILE__));
@@ -84,7 +84,7 @@ class vmcAuto extends eqLogic {
     $ph2o = $vmr * $pression;
     //log::add('vmcAuto', 'debug', "ph2o = $ph2o");
     if (($ph2o > $psat) || ($ph2o > $pression)) {
-      throw new Exception(__('La concentration est plus haute que la saturation', __FILE__));
+      throw new Exception(__('La concentration est plus haute que la saturation', __FILE__), 1001);
     }
     if ($ph2o < 0.039) {
       throw new Exception(__('Le calcul de la pression de saturation en-dessous de -50° C n\'est pas possible', __FILE__));
@@ -403,8 +403,17 @@ class vmcAuto extends eqLogic {
       $cmdConcentrationInt = $this->getCmd(null, 'H2OconcentrationInt');
       $cmdConcentrationInt->event($cInt);
       log::add('vmcAuto', 'debug', "concentration H2O intérieur : $cInt g/m3");
-      
-      $theoreticalH2OhumidityInt = self::computeH2oHumidity($this->getInteriorTemperature(), $this->getAtmosphericPressure(), $cExt);
+
+      try {
+        $theoreticalH2OhumidityInt = self::computeH2oHumidity($this->getInteriorTemperature(), $this->getAtmosphericPressure(), $cExt);
+      } catch (Exception $e) {
+        if ($e->getCode() === 1001) {
+          log::add('vmcAuto', 'info', "Air extérieur trop humide : risque de condensation.");
+          $theoreticalH2OhumidityInt = 100;
+        } else {
+          throw $e; // On laisse remonter les autres erreurs
+        }
+      }
       $cmdTheoreticalH2OhumidityInt = $this->getCmd(null, 'theoreticalH2OhumidityInt');
       $cmdTheoreticalH2OhumidityInt->event($theoreticalH2OhumidityInt);
       log::add('vmcAuto', 'debug', "concentration H2O intérieur théorique accessible : $theoreticalH2OhumidityInt %");
