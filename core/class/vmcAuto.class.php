@@ -20,6 +20,8 @@ require_once __DIR__  . '/../../../../core/php/core.inc.php';
 
 class vmcAuto extends eqLogic {
   public static function computeAirDensity($temperature, $pression) {
+    if ($temperature == null || $pression == null)
+	  throw new Exception(__(__METHOD__ . "($temperature, $pression) : Erreur de données", __FILE__));
     $AVOGADRO = 6.02214179*pow(10, 23);      // Avogadro constant, mol-1 (NIST, CODATA 2006)
     $BOLTZMANN = 1.3806504*pow(10, -23);     // Boltzmann constant, J K-1 (NIST, CODATA 2006)
     $UNIVERSAL_GAZ = $AVOGADRO * $BOLTZMANN; // universal gas constant J mol-1 K-1
@@ -34,6 +36,8 @@ class vmcAuto extends eqLogic {
   
   // H2O saturation pressure from Lowe & Ficke, 1974
   public static function computeH2oSaturationPressure($temperature) {
+    if ($temperature == null)
+	  throw new Exception(__(__METHOD__ . "($temperature) : Erreur de données", __FILE__));
     if ($temperature < -50) {
       throw new Exception(__('Le calcul de la pression de saturation en-dessous de -50° C n\'est pas possible', __FILE__));
     }
@@ -45,6 +49,8 @@ class vmcAuto extends eqLogic {
   // calcul de la concentration d'eau en g/m3 en fonction de la température, de la pression et du taux d'humidité
   public static function computeH2oConcentration($temperature, $pression, $humidity) {
     log::add('vmcAuto', 'debug', "computeH2oConcentration($temperature, $pression, $humidity)");
+    if ($temperature == null || $pression == null || $humidity == null)
+	  throw new Exception(__(__METHOD__ . "($temperature, $pression, $humidity) : Erreur de données", __FILE__));
     $MH2O = 18.01534; // molar mass of water, g mol-1
     if (($humidity < 0) || ($humidity > 100)) {
       throw new Exception(__('Cette humidité relative est impossible', __FILE__));
@@ -56,7 +62,7 @@ class vmcAuto extends eqLogic {
     $psat = self::computeH2oSaturationPressure($temperature);
     $ph2o = $psat * $humidity / 100;
     if (($ph2o > $psat) || ($ph2o > $pression)) {
-      throw new Exception(__('La concentration est plus haute que la saturation', __FILE__));
+      throw new Exception(__('La concentration est plus haute que la saturation', __FILE__), 1001);
     }
     if ($ph2o < 0.039) {
       throw new Exception(__('Le calcul de la pression de saturation en-dessous de -50° C n\'est pas possible', __FILE__));
@@ -68,6 +74,8 @@ class vmcAuto extends eqLogic {
   // calcul du taux d'humidité fonction de la température, de la pression et de la concentration en h2o
   public static function computeH2oHumidity($temperature, $pression, $h2oConcentration) {
     log::add('vmcAuto', 'debug', "computeH2oHumidity($temperature, $pression, $h2oConcentration)");
+    if ($temperature == null || $pression == null || $h2oConcentration == null)
+	  throw new Exception(__(__METHOD__ . "($temperature, $pression, $h2oConcentration) : Erreur de données", __FILE__));
     $MH2O = 18.01534; // molar mass of water, g mol-1
     if ($h2oConcentration < 0) {
       throw new Exception(__('Une concentration négative n\'est pas possible', __FILE__));
@@ -84,7 +92,7 @@ class vmcAuto extends eqLogic {
     $ph2o = $vmr * $pression;
     //log::add('vmcAuto', 'debug', "ph2o = $ph2o");
     if (($ph2o > $psat) || ($ph2o > $pression)) {
-      throw new Exception(__('La concentration est plus haute que la saturation', __FILE__));
+      throw new Exception(__('La concentration est plus haute que la saturation', __FILE__), 1001);
     }
     if ($ph2o < 0.039) {
       throw new Exception(__('Le calcul de la pression de saturation en-dessous de -50° C n\'est pas possible', __FILE__));
@@ -392,7 +400,9 @@ class vmcAuto extends eqLogic {
 
   public function calculate() {
     try {
-      $cExt = self::computeH2oConcentration($this->getExteriorTemperature(), $this->getAtmosphericPressure(),$this->getExteriorHumidity());
+      log::add('vmcAuto', 'debug', "Traitement de l'equipement : " . $this->getHumanName() . " (" . $this->getId() . ")");
+		
+      $cExt = self::computeH2oConcentration($this->getExteriorTemperature(), $this->getAtmosphericPressure(), $this->getExteriorHumidity());
       $cmdConcentrationExt = $this->getCmd(null, 'H2OconcentrationExt');
       $cmdConcentrationExt->event($cExt);
       log::add('vmcAuto', 'debug', "concentration H2O extérieur : $cExt g/m3");
@@ -401,8 +411,17 @@ class vmcAuto extends eqLogic {
       $cmdConcentrationInt = $this->getCmd(null, 'H2OconcentrationInt');
       $cmdConcentrationInt->event($cInt);
       log::add('vmcAuto', 'debug', "concentration H2O intérieur : $cInt g/m3");
-      
-      $theoreticalH2OhumidityInt = self::computeH2oHumidity($this->getInteriorTemperature(), $this->getAtmosphericPressure(), $cExt);
+
+      try {
+        $theoreticalH2OhumidityInt = self::computeH2oHumidity($this->getInteriorTemperature(), $this->getAtmosphericPressure(), $cExt);
+      } catch (Exception $e) {
+        if ($e->getCode() === 1001) {
+          log::add('vmcAuto', 'info', "Air extérieur trop humide : risque de condensation.");
+          $theoreticalH2OhumidityInt = 100;
+        } else {
+          throw $e; // On laisse remonter les autres erreurs
+        }
+      }
       $cmdTheoreticalH2OhumidityInt = $this->getCmd(null, 'theoreticalH2OhumidityInt');
       $cmdTheoreticalH2OhumidityInt->event($theoreticalH2OhumidityInt);
       log::add('vmcAuto', 'debug', "concentration H2O intérieur théorique accessible : $theoreticalH2OhumidityInt %");
@@ -443,48 +462,62 @@ class vmcAuto extends eqLogic {
 
   public function isRegulationActive() {
     $cmdRegulationState = $this->getCmd(null, 'regulationState');
+    log::add('vmcAuto', 'debug', __METHOD__ . "() / cmdId=$cmdId");
     return $this->getValueFromCmd($cmdRegulationState->getId());
   }
 
   public function isAutomatismeOn() {
     $cmdAutoState = $this->getCmd(null, 'autoState');
+    log::add('vmcAuto', 'debug', __METHOD__ . "() / cmdId=$cmdId");
     return $this->getValueFromCmd($cmdAutoState->getId());
   }
 
   public function isVmcOn() {
     $cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdVmcState')));
+    log::add('vmcAuto', 'debug', __METHOD__ . "() / cmdId=$cmdId");
     return $this->getValueFromCmd($cmdId);
   }
   
   private function getAtmosphericPressure() {
     $cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdPressionAtmo')));
+    log::add('vmcAuto', 'debug', __METHOD__ . "() / cmdId=$cmdId");
     return $this->getValueFromCmd($cmdId);
   }
 
   private function getInteriorTemperature() {
-    $cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdTemperatureInt')));
+	$cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdTemperatureInt')));
+    log::add('vmcAuto', 'debug', __METHOD__ . "() / cmdId=$cmdId");
     return $this->getValueFromCmd($cmdId);
   }
 
   private function getInteriorHumidity() {
     $cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdHumidityInt')));
+    log::add('vmcAuto', 'debug', __METHOD__ . "() / cmdId=$cmdId");
     return $this->getValueFromCmd($cmdId);
   }
 
   private function getExteriorTemperature() {
     $cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdTemperatureExt')));
+    log::add('vmcAuto', 'debug', __METHOD__ . "() / cmdId=$cmdId");
     return $this->getValueFromCmd($cmdId);
   }
 
   private function getExteriorHumidity() {
     $cmdId = trim(str_replace('#', '', $this->getConfiguration('cmdHumidityExt')));
+    log::add('vmcAuto', 'debug', __METHOD__ . "() / cmdId=$cmdId");
     return $this->getValueFromCmd($cmdId);
   }
 
   private function getValueFromCmd($cmdId) {
-    if ($cmdId == '') return false;
+    if ($cmdId == '') {
+	  log::add('vmcAuto', 'error', "cmdId indéfini");
+	  return null;
+	}
     $cmd = cmd::byId($cmdId);
-    if (!is_object($cmd)) return false;
+    if (!is_object($cmd)) {
+	  log::add('vmcAuto', 'error', "cmd #" . $cmdId . "# introuvable");
+	  return null;
+	}
     return $cmd->execCmd();
   }
 
